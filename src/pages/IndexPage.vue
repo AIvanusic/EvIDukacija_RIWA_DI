@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex flex-center">
     <img
-      alt="Quasar logo"
+      alt="EvIDukacija logo"
       src="src\assets\EvIDukacija_logotip.png"
       style="width: 600px; height: 400px"
     />

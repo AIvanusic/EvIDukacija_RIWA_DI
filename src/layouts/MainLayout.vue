@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleRightDrawer" />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-toolbar-title> EvIDukacija </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
@@ -12,7 +12,7 @@
 
     <q-drawer v-model="rightDrawerOpen" side="right" show-if-above bordered>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
+        <q-item-label header> Molimo, odaberite u kojoj ulozi pristupate. </q-item-label>
 
         <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
       </q-list>
@@ -30,22 +30,24 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
   {
-    title: 'Voditelj projekta / Administrator',
-    caption: 'quasar.dev',
+    title: 'Voditelj/ica projekta / Administrator/ica',
+    caption: 'Sve pod kontrolom ;)',
     icon: 'school',
-    link: 'https://quasar.dev',
+    route: '/administrator',
   },
   {
-    title: 'Nastavnik',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
+    title: 'Nastavnica/Nastavnik',
+    caption: 'Kvalificirani i stručni, spremni dijeliti svoje znanje',
+    icon: 'work',
+    route: '/nastavnik',
+    //link: 'https://github.com/quasarframework',
   },
   {
-    title: 'Polaznik edukacije',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
+    title: 'Polaznica/Polaznik edukacije',
+    caption: 'Dođoh, vidjeh, naučih!',
+    icon: 'person',
+    route: '/polaznik',
+    //link: 'https://chat.quasar.dev',
   },
 ]
 
