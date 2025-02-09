@@ -1,5 +1,5 @@
 <template>
-  <div class="fullscreen bg-purple text-white text-center q-pa-md flex flex-center">
+  <div class="fullscreen bg-teal text-white text-center q-pa-md flex flex-center">
     <div>
       <div style="font-size: 30vh">PROBA</div>
 
