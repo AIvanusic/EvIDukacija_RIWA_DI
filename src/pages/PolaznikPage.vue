@@ -1,68 +1,76 @@
 <template>
   <q-layout>
     <q-page-container>
-      <q-page>
-        <h2>Odaberite svoje ime i prezime</h2>
+      <q-page class="q-pa-md flex column items-center">
+        <!--u koraku 1 odabire se polaznik-->
+        <div v-if="korak === 1">
+          <h3>Odaberite svoje ime i prezime</h3>
 
-        <q-select
-          v-model="odabraniPolaznik"
-          :options="polaznici"
-          option-value="idPolaznika"
-          option-label="imeIPrezimePolaznika"
-          label="Molim, odaberite svoje ime i prezime"
-          filled
-        />
-
-        <div v-if="odabraniPolaznik">
-          <p>
+          <q-select
+            v-model="odabraniPolaznik"
+            :options="polaznici"
+            option-value="idPolaznika"
+            option-label="imeIPrezimePolaznika"
+            label="Molim, kliknite kako biste odabrali svoje ime i prezime"
+            filled
+            class="q-mb-md"
+          />
+          <p v-if="odabraniPolaznik">
             Dobar Vam dan, {{ odabraniPolaznik.imeIPrezimePolaznika }}. Dalje, molim Vas, odaberite
             kojoj ste edukaciji prisustvovali.
           </p>
+          <q-btn v-if="odabraniPolaznik" @click="sljedeciKorak" color="purple" label="Nastavite!" />
         </div>
-      </q-page>
-    </q-page-container>
 
-    <q-page-container>
-      <q-page>
-        <h2>Odaberite edukaciju.</h2>
+        <!--u koraku 2 odabire se edukacija-->
+        <div v-if="korak === 2">
+          <h3>Odaberite edukaciju.</h3>
 
-        <q-select
-          v-model="odabranaEdukacija"
-          :options="edukacija"
-          option-value="idEdukacije"
-          option-label="nazivEdukacije"
-          label="Kliknite za prikaz popisa održanih edukacija"
-          filled
-        />
-
-        <div v-if="odabranaEdukacija">
-          <p>
+          <q-select
+            v-model="odabranaEdukacija"
+            :options="edukacija"
+            option-value="idEdukacije"
+            option-label="nazivEdukacije"
+            label="Kliknite za prikaz popisa održanih edukacija"
+            filled
+            class="q-mb-md"
+          />
+          <p v-if="odabranaEdukacija">
             Zahvaljujemo. Dalje, molim Vas, odaberite u kojem ste terminu ili terminima
             prisustvovali edukaciji "{{ odabranaEdukacija.nazivEdukacije }}".
           </p>
+          <q-btn
+            v-if="odabranaEdukacija"
+            @click="sljedeciKorak"
+            color="purple"
+            label="Nastavite!"
+          />
         </div>
-      </q-page>
-    </q-page-container>
 
-    <q-page-container>
-      <q-page>
-        <h2>Odaberite između ponuđenih termina.</h2>
+        <!-- u koraku 3 odabire se termin-->
+        <div v-if="korak === 3">
+          <h3>Odaberite između ponuđenih termina.</h3>
 
-        <q-select
-          v-model="odabraniTermin"
-          :options="termin"
-          option-value="idTermina"
-          option-label="termin"
-          label="Kliknite za prikaz popisa termina u kojima se održavala edukacija"
-          filled
-        />
-
-        <div v-if="odabraniTermin">
-          <p>
+          <q-select
+            v-model="odabraniTermin"
+            :options="termin"
+            option-value="idTermina"
+            option-label="termin"
+            label="Kliknite za prikaz popisa termina u kojima se održavala edukacija"
+            filled
+            class="q-mb-md"
+          />
+          <p v-if="odabraniTermin">
             Zahvaljujemo. Zabilježit će se da ste edukaciji prisustvovali u terminu "{{
               odabraniTermin.termin
             }}".
           </p>
+          <q-btn
+            v-if="odabraniTermin"
+            @click="spremiEvidenciju"
+            color="green"
+            label="Prihvati unos!"
+          />
         </div>
       </q-page>
     </q-page-container>
@@ -72,6 +80,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+
+const korak = ref(1)
 
 const polaznici = ref([]) // popis polaznika
 const odabraniPolaznik = ref(null) // odabrani polaznik
@@ -108,8 +118,31 @@ const dohvatiTermine = async () => {
   }
 }
 
-// Dohvati podatke kad se stranica učita
+// Kada korisnik klikne "Dalje"
+const sljedeciKorak = () => {
+  if (korak.value === 1) {
+    dohvatiEdukacije() // Dohvati edukacije tek kada je odabran polaznik
+  } else if (korak.value === 2) {
+    dohvatiTermine() // Dohvati termine tek kada je odabrana edukacija
+  }
+  korak.value++ // Prijeđi na sljedeći korak
+}
+
+// Kada korisnik potvrdi odabir, sprema se evidencija
+const spremiEvidenciju = async () => {
+  try {
+    await axios.post('http://localhost:3000/api/evidencija', {
+      polaznikId: odabraniPolaznik.value.idPolaznika,
+      edukacijaId: odabranaEdukacija.value.idEdukacije,
+      terminId: odabraniTermin.value.idTermina,
+    })
+    alert('Evidencija uspješno spremljena!')
+    korak.value = 1 // Resetiraj formu
+  } catch (error) {
+    console.error('Greška pri spremanju evidencije:', error)
+  }
+}
+
+// Automatski dohvaća polaznike kad se stranica učita
 onMounted(dohvatiPolaznike)
-onMounted(dohvatiEdukacije)
-onMounted(dohvatiTermine)
 </script>
