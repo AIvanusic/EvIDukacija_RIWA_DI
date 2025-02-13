@@ -60,6 +60,8 @@
             filled
             class="q-mb-md"
           />
+          <p v-if="tekstPolaznik">{{ tekstPolaznik }}</p>
+          <p v-if="tekstEdukacija">{{ tekstEdukacija }}</p>
           <p v-if="odabraniTermin">
             Zahvaljujemo. Zabilježit će se da ste edukaciji prisustvovali u terminu "{{
               odabraniTermin.termin
@@ -82,6 +84,9 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 const korak = ref(1)
+
+const tekstPolaznik = ref('')
+const tekstEdukacija = ref('')
 
 const polaznici = ref([]) // popis polaznika
 const odabraniPolaznik = ref(null) // odabrani polaznik
@@ -118,14 +123,15 @@ const dohvatiTermine = async () => {
   }
 }
 
-// Kada korisnik klikne "Dalje"
 const sljedeciKorak = () => {
   if (korak.value === 1) {
-    dohvatiEdukacije() // Dohvati edukacije tek kada je odabran polaznik
+    tekstPolaznik.value = `Dobar Vam dan, ${odabraniPolaznik.value.imeIPrezimePolaznika}. Sada, molim Vas, odaberite edkukaciju kojoj ste prisustvovali.`
+    dohvatiEdukacije()
   } else if (korak.value === 2) {
-    dohvatiTermine() // Dohvati termine tek kada je odabrana edukacija
+    tekstEdukacija.value = `Zahvaljujemo. Sada, molim Vas, odaberite u kojem ste terminu ili terminima prisustvovali edukaciji "${odabranaEdukacija.value.nazivEdukacije}".`
+    dohvatiTermine()
   }
-  korak.value++ // Prijeđi na sljedeći korak
+  korak.value++
 }
 
 // Kada korisnik potvrdi odabir, sprema se evidencija
