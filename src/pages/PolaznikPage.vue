@@ -1,10 +1,14 @@
 <template>
+  <!--// samo da vidim imam li spremljeno-->
   <q-layout>
     <q-page-container>
       <q-page class="q-pa-md flex column items-center">
         <!--u koraku 1 odabire se polaznik-->
         <div v-if="korak === 1">
-          <h3>Odaberite svoje ime i prezime</h3>
+          <h4>
+            Dobro došli. Kako biste zabilježili svoje prisustvo, molimo Vas, odaberite svoje ime i
+            prezime:
+          </h4>
 
           <q-select
             v-model="odabraniPolaznik"
@@ -36,8 +40,10 @@
             class="q-mb-md"
           />
           <p v-if="odabranaEdukacija">
-            Zahvaljujemo. Dalje, molim Vas, odaberite u kojem ste terminu ili terminima
-            prisustvovali edukaciji "{{ odabranaEdukacija.nazivEdukacije }}".
+            Zahvaljujemo, {{ odabraniPolaznik.imeIPrezimePolaznika }}. Dalje, molim Vas, odaberite u
+            kojem ste terminu ili terminima prisustvovali edukaciji "{{
+              odabranaEdukacija.nazivEdukacije
+            }}".
           </p>
           <q-btn
             v-if="odabranaEdukacija"
@@ -60,10 +66,10 @@
             filled
             class="q-mb-md"
           />
-          <p v-if="tekstPolaznik">{{ tekstPolaznik }}</p>
-          <p v-if="tekstEdukacija">{{ tekstEdukacija }}</p>
+
           <p v-if="odabraniTermin">
-            Zahvaljujemo. Zabilježit će se da ste edukaciji prisustvovali u terminu "{{
+            {{ odabraniPolaznik.imeIPrezimePolaznika }}, zahvaljujemo. Zabilježit će se da ste
+            edukaciji {{ odabranaEdukacija.nazivEdukacije }} prisustvovali u terminu "{{
               odabraniTermin.termin
             }}".
           </p>

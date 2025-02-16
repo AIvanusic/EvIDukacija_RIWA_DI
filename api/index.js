@@ -3,6 +3,7 @@ const app = express()
 const mysql = require('mysql2/promise')
 const config = require('./config')
 const cors = require('cors')
+const bodyParser = require('body-parser')
 const port = 3000 // port na kojem radi server dok smo s projektom na 9000
 
 app.use(express.json())
@@ -12,7 +13,7 @@ app.use(
   }),
 )
 app.use(cors({ origin: '*' }))
-
+app.use(bodyParser.json())
 // Stvaranje veze na bazu - zašto ovo uz datoteku config.js?
 const pool = mysql.createPool(config.db)
 
@@ -53,6 +54,28 @@ app.get('/api/polaznici_termini', async function (req, res, next) {
     res.json(result_termini)
   } catch (err) {
     console.error('Oprostite. Došlo je do pogreške u očitavanju baze ', err.message)
+    next(err)
+  }
+})
+
+// POST ruta za spremanje evidencije
+app.post('/api/evidencija', async (req, res, next) => {
+  try {
+    const { polaznikId, edukacijaId, terminId } = req.body
+
+    if (!polaznikId || !edukacijaId || !terminId) {
+      return res.status(400).json({ error: 'Nedostaju podaci za spremanje evidencije!' })
+    }
+
+    // Upit za unos u tablicu RIWA_Evidencija
+    const [result] = await pool.query(
+      'INSERT INTO RIWA_Evidencija (idPolaznika, idEdukacije, idTermina) VALUES (?, ?, ?)',
+      [polaznikId, edukacijaId, terminId],
+    )
+
+    res.json({ message: 'Evidencija uspješno spremljena!', idEvidencija: result.insertId })
+  } catch (err) {
+    console.error('Greška pri spremanju evidencije: ', err.message)
     next(err)
   }
 })
