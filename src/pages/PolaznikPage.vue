@@ -3,6 +3,17 @@
   <q-layout>
     <q-page-container>
       <q-page class="q-pa-md flex column items-center">
+        <div class="absolute-right flex flex-center" style="top: 50%; transform: translateY(-50%)">
+          <q-btn
+            label="Povratak na glavnu stranicu"
+            size="25px"
+            round
+            color="teal"
+            icon="map"
+            @click="$router.push('/')"
+          />
+        </div>
+
         <!--u koraku 1 odabire se polaznik-->
         <div v-if="korak === 1">
           <h4>
@@ -23,6 +34,7 @@
             Dobar Vam dan, {{ odabraniPolaznik.imeIPrezimePolaznika }}. Dalje, molim Vas, odaberite
             kojoj ste edukaciji prisustvovali.
           </p>
+
           <q-btn v-if="odabraniPolaznik" @click="sljedeciKorak" color="purple" label="Nastavite!" />
         </div>
 
@@ -80,6 +92,27 @@
             label="Prihvati unos!"
           />
         </div>
+        <div>
+          <h4>Evidencija</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Polaznik</th>
+                <th>Nastavnik</th>
+                <th>Edukacija</th>
+                <th>Termin</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="e in evidencija" :key="e.idEvidencije">
+                <td>{{ e.polaznik || '-' }}</td>
+                <td>{{ e.nastavnik || '-' }}</td>
+                <td>{{ e.edukacija }}</td>
+                <td>{{ e.termin }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -102,6 +135,8 @@ const odabranaEdukacija = ref(null) // odabrana
 
 const termin = ref([]) // popis termina
 const odabraniTermin = ref(null) // odabrani termin
+
+const evidencija = ref([])
 
 // Funkcija za dohvaćanje podataka iz baze putem API-ja
 const dohvatiPolaznike = async () => {
@@ -149,12 +184,49 @@ const spremiEvidenciju = async () => {
       terminId: odabraniTermin.value.idTermina,
     })
     alert('Evidencija uspješno spremljena!')
-    korak.value = 1 // Resetiraj formu
+
+    odabraniPolaznik.value = null
+    odabranaEdukacija.value = null
+    odabraniTermin.value = null
+    tekstPolaznik.value = ''
+    tekstEdukacija.value = ''
+
+    await ispisEvidencije() // Ponovno dohvaćanje podataka nakon spremanja
+    korak.value = 1
   } catch (error) {
     console.error('Greška pri spremanju evidencije:', error)
   }
 }
 
+const ispisEvidencije = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/evidencija')
+    evidencija.value = response.data
+  } catch (error) {
+    console.error('Greška pri dohvaćanju evidencije:', error)
+  }
+}
+
 // Automatski dohvaća polaznike kad se stranica učita
 onMounted(dohvatiPolaznike)
+
+onMounted(ispisEvidencije)
 </script>
+
+<style scoped>
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+</style>
