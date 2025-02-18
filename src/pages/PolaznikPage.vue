@@ -6,7 +6,7 @@
         <div class="absolute-right flex flex-center" style="top: 50%; transform: translateY(-50%)">
           <q-btn
             label="Povratak na glavnu stranicu"
-            size="25px"
+            size="15px"
             round
             color="teal"
             icon="map"

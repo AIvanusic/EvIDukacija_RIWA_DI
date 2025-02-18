@@ -7,7 +7,12 @@ const routes = [
 
   {
     path: '/polaznik',
-    component: () => import('pages/PolaznikPage.vue'), // Ovo je stranica za "Polaznik"
+    component: () => import('pages/PolaznikPage.vue'), // ruta za otvaranje stranice namijenjene polazniku
+  },
+
+  {
+    path: '/administrator',
+    component: () => import('pages/AdministratorPage.vue'),
   },
 
   // Always leave this as last one,
