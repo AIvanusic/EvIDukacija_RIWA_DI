@@ -25,7 +25,7 @@ async function query(sql, params) {
 }
 
 // Provjera da API radi
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.json({ message: 'Provjereno: API funkcionira!' })
 })
 
@@ -59,6 +59,54 @@ app.get('/api/polaznici_termini', async function (req, res, next) {
   }
 })
 
+// dohvaćanje podataka o sveučilištu (za ispis)
+app.get('/api/RIWA_Sveuciliste', async (req, res, next) => {
+  try {
+    const result = await query('SELECT * FROM RIWA_Sveuciliste')
+    if (result.length > 0) {
+      res.json(result[0]) // Vraća prvi rezultat iz baze
+    } else {
+      res.status(404).json({ message: 'Nema podataka za prikaz' })
+    }
+  } catch (err) {
+    console.error('Greška pri dohvaćanju podataka o Sveučilištu: ', err.message)
+    next(err)
+  }
+})
+
+// dohvaćanje podataka o edukacijama (odabir edukacije)
+app.get('/api/RIWA_Edukacija', async (req, res, next) => {
+  try {
+    const result = await query('SELECT * FROM RIWA_Edukacija')
+    res.json(result)
+  } catch (err) {
+    console.error('Greška pri dohvaćanju podataka o edukacijama: ', err.message)
+    next(err)
+  }
+})
+
+// dohvaćanje podataka o nastavnicima izvođačima edukacije
+app.get('/api/RIWA_Nastavnik', async (req, res, next) => {
+  try {
+    const result = await query('SELECT * FROM RIWA_Nastavnik')
+    res.json(result)
+  } catch (err) {
+    console.error('Greška pri dohvaćanju podataka o nastavnicima: ', err.message)
+    next(err)
+  }
+})
+
+// dohvaćanje podataka o terminima održavanja edukacije
+app.get('/api/RIWA_Termin', async (req, res, next) => {
+  try {
+    const result = await query('SELECT * FROM RIWA_Termin')
+    res.json(result)
+  } catch (err) {
+    console.error('Greška pri dohvaćanju podataka o terminima: ', err.message)
+    next(err)
+  }
+})
+
 // POST ruta za spremanje evidencije
 app.post('/api/evidencija', async (req, res, next) => {
   try {
@@ -81,7 +129,72 @@ app.post('/api/evidencija', async (req, res, next) => {
   }
 })
 
-app.get('/evidencija', (req, res) => {
+app.post('/api/RIWA_Evidencija', async (req, res, next) => {
+  try {
+    const { idEdukacija, idNastavnika, idTermina } = req.body
+
+    if (!idEdukacija || !idNastavnika || !idTermina) {
+      return res.status(400).json({ error: 'Nedostaju podaci za spremanje evidencije!' })
+    }
+
+    // Upit za unos u tablicu RIWA_Evidencija
+    const [result] = await pool.query(
+      'INSERT INTO RIWA_Evidencija (idEdukacije, idNastavnika, idTermina) VALUES (?, ?, ?)',
+      [idEdukacija, idNastavnika, idTermina],
+    )
+
+    res.json({ message: 'Evidencija uspješno spremljena!', idEvidencija: result.insertId })
+  } catch (err) {
+    console.error('Greška pri spremanju evidencije: ', err.message)
+    next(err)
+  }
+})
+
+// PUT ruta za uređivanje evidencije
+app.put('/api/RIWA_Evidencija', async (req, res, next) => {
+  try {
+    const { idEdukacija, idNastavnika, idTermina } = req.body
+
+    if (!idEdukacija || !idNastavnika || !idTermina) {
+      return res.status(400).json({ error: 'Nedostaju podaci za uređivanje evidencije!' })
+    }
+
+    // Upit za uređivanje u tablici RIWA_Evidencija
+    await pool.query(
+      'UPDATE RIWA_Evidencija SET idNastavnika = ?, idTermina = ? WHERE idEdukacije = ?',
+      [idNastavnika, idTermina, idEdukacija],
+    )
+
+    res.json({ message: 'Evidencija uspješno uređena!' })
+  } catch (err) {
+    console.error('Greška pri uređivanju evidencije: ', err.message)
+    next(err)
+  }
+})
+
+// DELETE ruta za brisanje evidencije
+app.delete('/api/RIWA_Evidencija', async (req, res, next) => {
+  try {
+    const { idEdukacija, idNastavnika, idTermina } = req.body
+
+    if (!idEdukacija || !idNastavnika || !idTermina) {
+      return res.status(400).json({ error: 'Nedostaju podaci za brisanje evidencije!' })
+    }
+
+    // Upit za brisanje iz tablice RIWA_Evidencija
+    await pool.query(
+      'DELETE FROM RIWA_Evidencija WHERE idEdukacije = ? AND idNastavnika = ? AND idTermina = ?',
+      [idEdukacija, idNastavnika, idTermina],
+    )
+
+    res.json({ message: 'Evidencija uspješno obrisana!' })
+  } catch (err) {
+    console.error('Greška pri brisanju evidencije: ', err.message)
+    next(err)
+  }
+})
+
+app.get('/api/evidencija', (req, res) => {
   res.sendFile(__dirname + '/Prikazevidencije.html')
 })
 
