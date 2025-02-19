@@ -1,66 +1,70 @@
 <template>
-  <q-page>
-    <div class="q-pa-md">
-      <q-card class="q-mb-md top-left-align">
-        <q-card-section>
-          <div
-            v-if="
-              nazivSveucilista ||
-              nazivSastavnice ||
-              adresaSastavnice ||
-              nazivProjekta ||
-              voditeljProjekta
-            "
-          >
-            <p v-if="nazivSveucilista">{{ nazivSveucilista }}</p>
-            <p v-if="nazivSastavnice">{{ nazivSastavnice }}</p>
-            <p v-if="adresaSastavnice">{{ adresaSastavnice }}</p>
-            <p v-if="nazivProjekta">{{ nazivProjekta }}</p>
-            <p v-if="voditeljProjekta">{{ voditeljProjekta }}</p>
+  <q-layout>
+    <q-page-container>
+      <q-page>
+        <div class="q-pa-md">
+          <q-card class="q-mb-md top-left-align">
+            <q-card-section>
+              <div
+                v-if="
+                  nazivSveucilista ||
+                  nazivSastavnice ||
+                  adresaSastavnice ||
+                  nazivProjekta ||
+                  voditeljProjekta
+                "
+              >
+                <p v-if="nazivSveucilista">{{ nazivSveucilista }}</p>
+                <p v-if="nazivSastavnice">{{ nazivSastavnice }}</p>
+                <p v-if="adresaSastavnice">{{ adresaSastavnice }}</p>
+                <p v-if="nazivProjekta">{{ nazivProjekta }}</p>
+                <p v-if="voditeljProjekta">{{ voditeljProjekta }}</p>
+              </div>
+              <div v-else>
+                <p>Nema podataka za prikaz</p>
+              </div>
+            </q-card-section>
+          </q-card>
+          <div class="q-mb-md text-center">
+            <q-select
+              v-model="odabraneEdukacije"
+              :options="edukacije"
+              placeholder="Molimo odaberite naziv edukacije"
+              label="Molimo odaberite naziv edukacije"
+              option-value="idEdukacije"
+              option-label="nazivEdukacije"
+            />
           </div>
-          <div v-else>
-            <p>Nema podataka za prikaz</p>
+          <div class="q-mb-md">
+            <q-select
+              v-model="odabraniNastavnik"
+              :options="nastavnici"
+              label="Ime i prezime nastavnika izvođača edukacije"
+              option-value="idNastavnika"
+              option-label="imeIPrezimeNastavnika"
+            />
+            <q-select
+              v-model="odabraniTermin"
+              :options="termini"
+              label="Termin održane edukacije"
+              option-value="idTermina"
+              option-label="termin"
+            />
           </div>
-        </q-card-section>
-      </q-card>
-      <div class="q-mb-md text-center">
-        <q-select
-          v-model="odabraneEdukacije"
-          :options="edukacije"
-          placeholder="Molimo odaberite naziv edukacije"
-          label="Molimo odaberite naziv edukacije"
-          option-value="idEdukacije"
-          option-label="nazivEdukacije"
-        />
-      </div>
-      <div class="q-mb-md">
-        <q-select
-          v-model="odabraniNastavnik"
-          :options="nastavnici"
-          label="Ime i prezime nastavnika izvođača edukacije"
-          option-value="idNastavnika"
-          option-label="imeIPrezimeNastavnika"
-        />
-        <q-select
-          v-model="odabraniTermin"
-          :options="termini"
-          label="Termin održane edukacije"
-          option-value="idTermina"
-          option-label="termin"
-        />
-      </div>
-      <div class="q-mb-md">
-        <q-btn color="primary" label="Spremi" @click="onSave" />
-        <q-btn color="green" label="Izmijeni" @click="onEdit" />
-        <q-btn color="red" label="Obriši" @click="onDelete" />
-      </div>
-    </div>
-  </q-page>
+          <div class="q-mb-md">
+            <q-btn color="primary" label="Spremi" @click="onSave" />
+            <q-btn color="green" label="Izmijeni" @click="onEdit" />
+            <q-btn color="red" label="Obriši" @click="onDelete" />
+          </div>
+        </div>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { api } from 'boot/axios'
+import axios from 'axios'
 
 defineOptions({
   name: 'NastavnikPage',
@@ -81,39 +85,49 @@ const odabraniNastavnik = ref(null)
 const termini = ref([])
 const odabraniTermin = ref(null)
 
-const fetchData = async () => {
+const dohvatiSveuciliste = async () => {
   try {
-    const sveucilisteInfo = await api.get('/api/RIWA_Sveuciliste')
-    console.log('Sveučilište:', sveucilisteInfo.data)
-    if (sveucilisteInfo.data) {
-      nazivSveucilista.value = sveucilisteInfo.data.nazivSveucilista
-      nazivSastavnice.value = sveucilisteInfo.data.nazivSastavnice
-      adresaSastavnice.value = sveucilisteInfo.data.adresaSastavnice
-      nazivProjekta.value = sveucilisteInfo.data.nazivProjekta
-      voditeljProjekta.value = sveucilisteInfo.data.voditeljProjekta
-    } else {
-      console.error('Nema podataka za prikaz')
-    }
-
-    const edukacijaInfo = await api.get('/api/RIWA_Edukacija')
-    console.log('Edukacija:', edukacijaInfo.data)
-    edukacije.value = edukacijaInfo.data
-
-    const nastavnikInfo = await api.get('/api/RIWA_Nastavnik')
-    console.log('Nastavnik:', nastavnikInfo.data)
-    nastavnici.value = nastavnikInfo.data
-
-    const terminInfo = await api.get('/api/RIWA_Termin')
-    console.log('Termin:', terminInfo.data)
-    termini.value = terminInfo.data
+    const response = await axios.get('http://localhost:3000/api/RIWA_Sveuciliste')
+    nazivSveucilista.value = response.data.nazivSveucilista
+    nazivSastavnice.value = response.data.nazivSastavnice
+    adresaSastavnice.value = response.data.adresaSastavnice
+    nazivProjekta.value = response.data.nazivProjekta
+    voditeljProjekta.value = response.data.voditeljProjekta
   } catch (error) {
-    console.error('Pogreška dohvaćanja podataka:', error)
+    console.error('Pogreška dohvaćanja podataka o sveučilištu:', error)
+  }
+}
+
+const dohvatiEdukacije = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/RIWA_Edukacija')
+    edukacije.value = response.data
+  } catch (error) {
+    console.error('Pogreška dohvaćanja podataka o edukacijama:', error)
+  }
+}
+
+const dohvatiNastavnike = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/RIWA_Nastavnik')
+    nastavnici.value = response.data
+  } catch (error) {
+    console.error('Pogreška dohvaćanja podataka o nastavnicima:', error)
+  }
+}
+
+const dohvatiTermine = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/RIWA_Termin')
+    termini.value = response.data
+  } catch (error) {
+    console.error('Pogreška dohvaćanja podataka o terminima:', error)
   }
 }
 
 const onSave = async () => {
   try {
-    await api.post('/api/RIWA_Evidencija', {
+    await axios.post('http://localhost:3000/api/RIWA_Evidencija', {
       idEdukacija: odabraneEdukacije.value,
       idNastavnika: odabraniNastavnik.value,
       idTermina: odabraniTermin.value,
@@ -126,7 +140,7 @@ const onSave = async () => {
 
 const onEdit = async () => {
   try {
-    await api.put('/api/RIWA_Evidencija', {
+    await axios.put('http://localhost:3000/api/RIWA_Evidencija', {
       idEdukacija: odabraneEdukacije.value,
       idNastavnika: odabraniNastavnik.value,
       idTermina: odabraniTermin.value,
@@ -139,7 +153,7 @@ const onEdit = async () => {
 
 const onDelete = async () => {
   try {
-    await api.delete('/api/RIWA_Evidencija', {
+    await axios.delete('http://localhost:3000/api/RIWA_Evidencija', {
       data: {
         idEdukacija: odabraneEdukacije.value,
         idNastavnika: odabraniNastavnik.value,
@@ -153,7 +167,10 @@ const onDelete = async () => {
 }
 
 onMounted(() => {
-  fetchData()
+  dohvatiSveuciliste()
+  dohvatiEdukacije()
+  dohvatiNastavnike()
+  dohvatiTermine()
 })
 </script>
 
