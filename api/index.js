@@ -1,11 +1,21 @@
 const express = require('express')
+const cors = require('cors')
 const app = express()
+const port = 3000 // port na kojem radi server dok smo s projektom na 9000
 const mysql = require('mysql2/promise')
 const config = require('./config')
-const cors = require('cors')
 const bodyParser = require('body-parser')
-const port = 3000 // port na kojem radi server dok smo s projektom na 9000
 
+async function query(sql, params) {
+  try {
+    const connection = await mysql.createConnection(config.db)
+    const [results] = await connection.execute(sql, params)
+
+    return results
+  } catch (error) {
+    console.error(error.message)
+  }
+}
 app.use(express.json())
 app.use(
   express.urlencoded({
@@ -17,12 +27,6 @@ app.use(bodyParser.json())
 // Stvaranje veze na bazu - zašto ovo uz datoteku config.js?
 app.use(express.static(__dirname))
 const pool = mysql.createPool(config.db)
-
-// Funkcija za izvršavanje SQL upita
-async function query(sql, params) {
-  const [rows] = await pool.execute(sql, params)
-  return rows
-}
 
 // Provjera da API radi
 app.get('/api', (req, res) => {
@@ -211,6 +215,65 @@ app.get('/api/evidencija', async function (req, res, next) {
     res.json(result)
   } catch (err) {
     console.error('Greška pri dohvaćanju evidencije: ', err.message)
+    next(err)
+  }
+})
+
+app.get('/api/RIWA_Edukacija', async function (req, res, next) {
+  try {
+    const sveIzEdukacija = await query('SELECT * FROM RIWA_Edukacija')
+
+    res.json(sveIzEdukacija)
+  } catch (err) {
+    console.error('Greška u čitanju popisa edukacija ', err.message)
+    next(err)
+  }
+})
+app.put('/api/RIWA_Edukacija', async function (req, res, next) {
+  try {
+    const sveIzEdukacija = await query(
+      'UPDATE RIWA_Edukacija SET nazivEdukacije=:nazivEdukacije WHERE idEdukacije=:idEdukacije',
+      {
+        idEdukacije: req.body.idEdukacije,
+        nazivEdukacije: req.body.nazivEdukacije,
+      },
+    )
+
+    res.json(sveIzEdukacija)
+  } catch (err) {
+    console.error('Greška u ažuriranju popisa edukacija ', err.message)
+    next(err)
+  }
+})
+
+app.post('/api/RIWA_Edukacija', async function (req, res, next) {
+  try {
+    const sveIzEdukacija = await query(
+      'INSERT INTO RIWA_Edukacija (nazivEdukacije) VALUES (:nazivEdukacije)',
+      {
+        nazivEdukacije: req.body.nazivEdukacije,
+      },
+    )
+
+    res.json(sveIzEdukacija)
+  } catch (err) {
+    console.error('Greška u ubacivanju nove edukacije u popis edukacija ', err.message)
+    next(err)
+  }
+})
+app.delete('/api/RIWA_Edukacija', async function (req, res, next) {
+  console.log(req.body)
+  try {
+    const sveIzEdukacija = await query(
+      'DELETE FROM RIWA_Edukacija WHERE idEdukacije=:idEdukacije',
+      {
+        idEdukacije: req.body.idEdukacije,
+      },
+    )
+
+    res.json(sveIzEdukacija)
+  } catch (err) {
+    console.error('Greška u brisanju edukacije s popisa edukacija ', err.message)
     next(err)
   }
 })
