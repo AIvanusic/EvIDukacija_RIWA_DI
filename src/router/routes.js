@@ -13,7 +13,7 @@ const routes = [
     path: '/administrator',
     component: () => import('pages/AdministratorPage.vue'),
   },
-  { path: 'nastavnik', component: () => import('pages/NastavnikPage.vue') },
+  { path: '/nastavnik', component: () => import('pages/NastavnikPage.vue') },
   // Always leave this as last one,
   // but you can also remove it
   {
