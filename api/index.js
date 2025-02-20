@@ -1,10 +1,17 @@
 const express = require('express')
 const cors = require('cors')
 const app = express()
-const port = 3000 // port na kojem radi server dok smo s projektom na 9000
 const mysql = require('mysql2/promise')
 const config = require('./config')
 const bodyParser = require('body-parser')
+
+app.use(cors({ origin: '*' }))
+app.use(express.static(__dirname))
+app.use(bodyParser.json())
+const port = 3000 // port na kojem radi server dok smo s projektom na 9000
+
+// Stvaranje veze na bazu - zašto ovo uz datoteku config.js?
+const pool = mysql.createPool(config.db)
 
 async function query(sql, params) {
   try {
@@ -17,20 +24,11 @@ async function query(sql, params) {
   }
 }
 app.use(express.json())
-app.use(
-  express.urlencoded({
-    extended: true,
-  }),
-)
-app.use(cors({ origin: '*' }))
-app.use(bodyParser.json())
-// Stvaranje veze na bazu - zašto ovo uz datoteku config.js?
-app.use(express.static(__dirname))
-const pool = mysql.createPool(config.db)
+app.use(express.urlencoded({ extended: true }))
 
-// Provjera da API radi
+// Provjeravam radi li API
 app.get('/api', (req, res) => {
-  res.json({ message: 'Provjereno: API funkcionira!' })
+  res.json({ message: 'Olakšanje: API funkcionira!' })
 })
 
 app.get('/api/polaznici_polaznici', async function (req, res, next) {
@@ -198,6 +196,7 @@ app.delete('/api/RIWA_Evidencija', async (req, res, next) => {
   }
 })
 
+// mislim da je ovo za brisanje - iz probne tablice za kontrolu rada na samoj stranici. Provjeriti!
 app.get('/api/evidencija', (req, res) => {
   res.sendFile(__dirname + '/Prikazevidencije.html')
 })
@@ -219,7 +218,7 @@ app.get('/api/evidencija', async function (req, res, next) {
   }
 })
 
-app.get('/api/RIWA_Edukacija', async function (req, res, next) {
+app.get('/api/Administrator_Edukacija', async function (req, res, next) {
   try {
     const sveIzEdukacija = await query('SELECT * FROM RIWA_Edukacija')
 
@@ -229,7 +228,7 @@ app.get('/api/RIWA_Edukacija', async function (req, res, next) {
     next(err)
   }
 })
-app.put('/api/RIWA_Edukacija', async function (req, res, next) {
+app.put('/api/Administrator_Edukacija', async function (req, res, next) {
   try {
     const sveIzEdukacija = await query(
       'UPDATE RIWA_Edukacija SET nazivEdukacije=:nazivEdukacije WHERE idEdukacije=:idEdukacije',
@@ -246,7 +245,7 @@ app.put('/api/RIWA_Edukacija', async function (req, res, next) {
   }
 })
 
-app.post('/api/RIWA_Edukacija', async function (req, res, next) {
+app.post('/api/Administrator_Edukacija', async function (req, res, next) {
   try {
     const sveIzEdukacija = await query(
       'INSERT INTO RIWA_Edukacija (nazivEdukacije) VALUES (:nazivEdukacije)',
@@ -261,7 +260,7 @@ app.post('/api/RIWA_Edukacija', async function (req, res, next) {
     next(err)
   }
 })
-app.delete('/api/RIWA_Edukacija', async function (req, res, next) {
+app.delete('/api/Administrator_Edukacija', async function (req, res, next) {
   console.log(req.body)
   try {
     const sveIzEdukacija = await query(
@@ -274,6 +273,59 @@ app.delete('/api/RIWA_Edukacija', async function (req, res, next) {
     res.json(sveIzEdukacija)
   } catch (err) {
     console.error('Greška u brisanju edukacije s popisa edukacija ', err.message)
+    next(err)
+  }
+})
+
+// rad administratora na terminima - sve CRUD operacije
+app.get('/api/Administrator_Termin', async function (req, res, next) {
+  try {
+    const sveIzTermina = await query('SELECT * FROM RIWA_Termin')
+
+    res.json(sveIzTermina)
+  } catch (err) {
+    console.error('Greška u čitanju održanih temina na edukacijama ', err.message)
+    next(err)
+  }
+})
+app.put('/api/Administrator_Termin', async function (req, res, next) {
+  try {
+    const sveIzTermina = await query(
+      'UPDATE RIWA_Termin SET termin=:termin WHERE idTermina=:idTermina',
+      {
+        idTermina: req.body.idTermina,
+        termin: req.body.termin,
+      },
+    )
+    res.json(sveIzTermina)
+  } catch (err) {
+    console.error('Greška u ažuriranju popisa termina edukacija ', err.message)
+    next(err)
+  }
+})
+
+app.post('/api/Administrator_Termin', async function (req, res, next) {
+  try {
+    const sveIzTermina = await query('INSERT INTO RIWA_Termin (termin) VALUES (:termin)', {
+      termin: req.body.termin,
+    })
+
+    res.json(sveIzTermina)
+  } catch (err) {
+    console.error('Greška u ubacivanju novog termina održane edukacije: ', err.message)
+    next(err)
+  }
+})
+app.delete('/api/Administrator_Termin', async function (req, res, next) {
+  console.log(req.body)
+  try {
+    const sveIzTermina = await query('DELETE FROM RIWA_Termin WHERE idTermina=:idTermina', {
+      idTermina: req.body.idTermina,
+    })
+
+    res.json(sveIzTermina)
+  } catch (err) {
+    console.error('Greška u brisanju termina održavanja edukacije ', err.message)
     next(err)
   }
 })
