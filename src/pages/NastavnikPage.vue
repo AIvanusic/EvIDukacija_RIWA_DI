@@ -2,7 +2,7 @@
   <q-layout view="hHh lpR fFf">
     <q-header elevated>
       <q-toolbar>
-        <q-toolbar-title> Nastavnik Page </q-toolbar-title>
+        <q-toolbar-title> Nastavnik izvođač edukacije </q-toolbar-title>
       </q-toolbar>
     </q-header>
 
@@ -140,9 +140,14 @@ const onSave = async () => {
       idNastavnika: odabraniNastavnik.value,
       idTermina: odabraniTermin.value,
     })
-    console.log('Podaci uspješno spremljeni')
+    alert('Evidencija uspješno spremljena!')
+
+    odabraneEdukacije.value = null
+    odabraniNastavnik.value = null
+    odabraniTermin.value = null
   } catch (error) {
     console.error('Pogreška spremanja podataka:', error)
+    alert('Pogreška spremanja podataka')
   }
 }
 
@@ -153,9 +158,14 @@ const onEdit = async () => {
       idNastavnika: odabraniNastavnik.value,
       idTermina: odabraniTermin.value,
     })
-    console.log('Podaci uspješno uređeni')
+    alert('Evidencija uspješno uređena!')
+
+    odabraneEdukacije.value = null
+    odabraniNastavnik.value = null
+    odabraniTermin.value = null
   } catch (error) {
     console.error('Pogreška kod uređivanja podataka:', error)
+    alert('Pogreška kod uređivanja podataka')
   }
 }
 
@@ -168,9 +178,14 @@ const onDelete = async () => {
         idTermina: odabraniTermin.value,
       },
     })
-    console.log('Podaci uspješno obrisani')
+    alert('Evidencija uspješno obrisana!')
+
+    odabraneEdukacije.value = null
+    odabraniNastavnik.value = null
+    odabraniTermin.value = null
   } catch (error) {
     console.error('Pogreška brisanja podataka:', error)
+    alert('Pogreška brisanja podataka')
   }
 }
 
