@@ -19,7 +19,7 @@
                 <template v-slot:top>
                   <q-btn
                     color="primary"
-                    label="Pregledaj ponuđene edukacije"
+                    label="Pregled ponuđenih edukacija"
                     @click="onReadEdukacije"
                   />
                   <q-space />
@@ -60,7 +60,7 @@
                 @update:selected="onSelectionRowTermini"
               >
                 <template v-slot:top>
-                  <q-btn color="primary" label="Pregledaj termine" @click="onReadTermini" />
+                  <q-btn color="primary" label="Pregled svih termina" @click="onReadTermini" />
                   <q-space />
                   <q-btn color="primary" label="Novi termin" @click="onAddRowTermini" />
                   <q-btn
@@ -99,7 +99,11 @@
                 @update:selected="onSelectionRowNastavnici"
               >
                 <template v-slot:top>
-                  <q-btn color="primary" label="Pregledaj nastavnike" @click="onReadNastavnici" />
+                  <q-btn
+                    color="primary"
+                    label="Pregled svih nastavnika"
+                    @click="onReadNastavnici"
+                  />
                   <q-space />
                   <q-btn color="primary" label="Novi nastavnik" @click="onAddRowNastavnici" />
                   <q-btn
@@ -122,8 +126,46 @@
           </q-card>
         </div>
 
-        <!-- Ako želite prikazati selektirane podatke za debug, odkomentirajte sljedeće -->
+        <!-- ovdje će se raditi s polaznicima na svim edukacijama-->
+        <div>
+          <q-card flat bordered class="q-pa-sm">
+            <q-card-section>
+              <q-table
+                title="Polaznici"
+                :rows="polaznici"
+                :columns="columnsPolaznici"
+                row-key="idPolaznika"
+                flat
+                selection="single"
+                v-model:selected="RIWA_Polaznik"
+                @update:selected="onSelectionRowPolaznici"
+              >
+                <template v-slot:top>
+                  <q-btn color="primary" label="Pregledaj polaznike" @click="onReadPolaznici" />
+                  <q-space />
+                  <q-btn color="primary" label="Novi polaznik" @click="onAddRowPolaznici" />
+                  <q-btn
+                    v-if="RIWA_Polaznik.length !== 0"
+                    class="q-ml-sm"
+                    color="primary"
+                    label="Izmijeni polaznika"
+                    @click="onEditRowPolaznici"
+                  />
+                  <q-btn
+                    v-if="RIWA_Polaznik.length !== 0"
+                    class="q-ml-sm"
+                    color="red"
+                    label="Obriši polaznika"
+                    @click="onDeleteRowPolaznici"
+                  />
+                </template>
+              </q-table>
+            </q-card-section>
+          </q-card>
+        </div>
+
         <div class="q-pa-md">{{ RIWA_Edukacija }}</div>
+
         <div class="q-pa-md" v-if="showFormEdukacije">
           <q-card flat bordered class="q-pa-sm">
             <q-card-section>
@@ -182,10 +224,6 @@
                   filled
                   v-model="urediNastavnika.titulaNastavnika"
                   label="Titula nastavnika"
-                  lazy-rules
-                  :rules="[
-                    (val) => (val && val.length > 0) || 'Unesite podatke o nastavniku: titulu',
-                  ]"
                 />
                 <q-input
                   filled
@@ -203,6 +241,31 @@
                     label="Zatvori unos podataka o nastavniku"
                     color="primary"
                     @click="onCloseNastavnici"
+                    class="q-ml-sm"
+                  />
+                </div>
+              </q-form>
+            </q-card-section>
+          </q-card>
+        </div>
+
+        <div class="q-pa-md" v-if="showFormPolaznici">
+          <q-card flat bordered class="q-pa-sm">
+            <q-card-section>
+              <q-form @submit="onSavePolaznici">
+                <q-input
+                  filled
+                  v-model="urediPolaznike.imeIPrezimePolaznika"
+                  label="Podaci o polazniku: ime i prezime"
+                  lazy-rules
+                  :rules="[(val) => (val && val.length > 0) || 'Unesite ime i prezime polaznika']"
+                />
+                <div>
+                  <q-btn label="Spremi polaznika" type="submit" color="primary" />
+                  <q-btn
+                    label="Zatvori unos podataka o polazniku"
+                    color="primary"
+                    @click="onClosePolaznici"
                     class="q-ml-sm"
                   />
                 </div>
@@ -263,6 +326,17 @@ const columnsNastavnici = [
   },
 ]
 
+const columnsPolaznici = [
+  {
+    name: 'polaznik',
+    required: true,
+    label: 'Ime i prezime polaznika',
+    align: 'left',
+    field: 'imeIPrezimePolaznika',
+    sortable: true,
+  },
+]
+
 const edukacije = ref([])
 const RIWA_Edukacija = ref([])
 const urediEdukaciju = ref({})
@@ -277,6 +351,11 @@ const nastavnici = ref([])
 const RIWA_Nastavnik = ref([])
 const urediNastavnika = ref({})
 const showFormNastavnici = ref(false)
+
+const polaznici = ref([])
+const RIWA_Polaznik = ref([])
+const urediPolaznika = ref({})
+const showFormPolaznici = ref(false)
 
 // ovo je za rad administratora s edukacijama
 const onReadEdukacije = async () => {
@@ -477,9 +556,76 @@ const onSaveNastavnici = async () => {
   }
 }
 
+// ovo je za rad administratora s podaciam o polaznicima
+const onReadPolaznici = async () => {
+  try {
+    const sveIzPolaznika = await api.get('/Administrator_Polaznik')
+    polaznici.value = sveIzPolaznika.data
+    RIWA_Polaznik.value = []
+    showFormPolaznici.value = false
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const onDeleteRowPolaznici = async () => {
+  try {
+    const sveIzPolaznika = await api.delete('/Administrator_Polaznik', {
+      data: {
+        idPolaznika: RIWA_Polaznik.value[0].idPolaznika,
+      },
+    })
+    onReadPolaznici()
+    RIWA_Polaznik.value = []
+    console.log('Novi zapis:', sveIzPolaznika.data)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const onAddRowPolaznici = () => {
+  RIWA_Polaznik.value = []
+  urediPolaznika.value.idPolaznika = null
+  urediPolaznika.value.imeIPrezimePolaznika = null
+  showFormPolaznici.value = true
+  console.log('Stanje podataka o polaznicima nakon dodavanja:', polaznici.value)
+}
+
+const onEditRowPolaznici = () => {
+  urediPolaznika.value = Object.assign({}, RIWA_Polaznik.value[0])
+  showFormPolaznici.value = true
+  console.log('Stanje podataka o polaznicima nakon dodavanja:', polaznici.value)
+}
+
+const onClosePolaznici = () => {
+  urediPolaznika.value.idPolaznika = null
+  urediPolaznika.value.imeIPrezimePolaznika = null
+  showFormPolaznici.value = false
+}
+
+const onSelectionRowPolaznici = () => {
+  urediPolaznika.value.idPolaznika = null
+  urediPolaznika.value.imeIPrezimePolaznika = null
+  showFormPolaznici.value = false
+}
+
+const onSavePolaznici = async () => {
+  try {
+    if (urediPolaznika.value.idPolaznika === null) {
+      await api.post('/Administrator_Polaznik', urediPolaznika.value)
+    } else {
+      await api.put('/Administrator_Polaznik', urediPolaznika.value)
+    }
+    onReadPolaznici()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 onMounted(() => {
   onReadEdukacije()
   onReadTermini()
   onReadNastavnici()
+  onReadPolaznici()
 })
 </script>

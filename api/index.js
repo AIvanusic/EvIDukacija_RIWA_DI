@@ -336,13 +336,13 @@ app.delete('/api/Administrator_Termin', async function (req, res, next) {
 app.get('/api/Administrator_Nastavnik', async function (req, res, next) {
   try {
     const sveIzNastavnika = await query('SELECT * FROM RIWA_Nastavnik')
-
     res.json(sveIzNastavnika)
   } catch (err) {
     console.error('Greška u čitanju popisa nastavnika ', err.message)
     next(err)
   }
 })
+
 app.put('/api/Administrator_Nastavnik', async function (req, res, next) {
   try {
     const sveIzNastavnika = await query(
@@ -353,7 +353,6 @@ app.put('/api/Administrator_Nastavnik', async function (req, res, next) {
         imeIPrezimeNastavnika: req.body.imeIPrezimeNastavnika,
       },
     )
-
     res.json(sveIzNastavnika)
   } catch (err) {
     console.error('Greška u ažuriranju popisa nastavnika ', err.message)
@@ -361,7 +360,7 @@ app.put('/api/Administrator_Nastavnik', async function (req, res, next) {
   }
 })
 
-app.post('/api/Administrator_Termin', async function (req, res, next) {
+app.post('/api/Administrator_Nastavnik', async function (req, res, next) {
   try {
     const sveIzNastavnika = await query(
       'INSERT INTO RIWA_Nastavnik (titulaNastavnika, imeIPrezimeNastavnika) VALUES (:titulaNastavnika, :imeIPrezimeNastavnika)',
@@ -370,13 +369,13 @@ app.post('/api/Administrator_Termin', async function (req, res, next) {
         imeIPrezimeNastavnika: req.body.imeIPrezimeNastavnika,
       },
     )
-
     res.json(sveIzNastavnika)
   } catch (err) {
     console.error('Greška u ubacivanju novog nastavnika ', err.message)
     next(err)
   }
 })
+
 app.delete('/api/Administrator_Nastavnik', async function (req, res, next) {
   console.log(req.body)
   try {
@@ -390,6 +389,62 @@ app.delete('/api/Administrator_Nastavnik', async function (req, res, next) {
     res.json(sveIzNastavnika)
   } catch (err) {
     console.error('Greška u brisanju nastavnika s popisa nastavnika ', err.message)
+    next(err)
+  }
+})
+
+// Administrator manipulira polaznicima - CRUD
+app.get('/api/Administrator_Polaznik', async function (req, res, next) {
+  try {
+    const sveIzPolaznika = await query('SELECT * FROM RIWA_Polaznik')
+    res.json(sveIzPolaznika)
+  } catch (err) {
+    console.error('Greška u čitanju popisa polaznika ', err.message)
+    next(err)
+  }
+})
+
+app.put('/api/Administrator_Polaznik', async function (req, res, next) {
+  try {
+    const sveIzPolaznika = await query(
+      'UPDATE RIWA_Polaznik SET imeIPrezimePolaznika=:imeIPrezimePolaznika WHERE idPolaznika=:idPolaznika',
+      {
+        idPolaznika: req.body.idPolaznika,
+        imeIPrezimePolaznika: req.body.imeIPrezimePolaznika,
+      },
+    )
+    res.json(sveIzPolaznika)
+  } catch (err) {
+    console.error('Greška u ažuriranju popisa polaznika ', err.message)
+    next(err)
+  }
+})
+
+app.post('/api/Administrator_Polaznik', async function (req, res, next) {
+  try {
+    const sveIzPolaznika = await query(
+      'INSERT INTO RIWA_Polaznik (imeIPrezimeNastavnika) VALUES (:imeIPrezimeNastavnika)',
+      {
+        imeIPrezimePolaznika: req.body.imeIPrezimePolaznika,
+      },
+    )
+    res.json(sveIzPolaznika)
+  } catch (err) {
+    console.error('Greška u ubacivanju novog polaznika ', err.message)
+    next(err)
+  }
+})
+
+app.delete('/api/Administrator_Polaznik', async function (req, res, next) {
+  console.log(req.body)
+  try {
+    const sveIzPolaznika = await query('DELETE FROM RIWA_Polaznik WHERE idPolaznika=:idPolaznika', {
+      idPolaznika: req.body.idPolaznika,
+    })
+
+    res.json(sveIzPolaznika)
+  } catch (err) {
+    console.error('Greška u brisanju polaznika s popisa polaznnika ', err.message)
     next(err)
   }
 })
