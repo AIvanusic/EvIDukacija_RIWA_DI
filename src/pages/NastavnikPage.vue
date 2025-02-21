@@ -50,6 +50,7 @@
               label="Ime i prezime nastavnika izvođača edukacije"
               option-value="idNastavnika"
               option-label="imeIPrezimeNastavnika"
+              @change="dohvatiEvidenciju"
             />
             <q-select
               v-model="odabraniTermin"
@@ -93,6 +94,8 @@ const odabraniNastavnik = ref(null)
 const termini = ref([])
 const odabraniTermin = ref(null)
 
+const odabranaEvidencija = ref(null) // Varijabla za pohranu odabrane evidencije
+
 const dohvatiSveuciliste = async () => {
   try {
     const response = await axios.get('http://localhost:3000/api/RIWA_Sveuciliste')
@@ -133,6 +136,25 @@ const dohvatiTermine = async () => {
   }
 }
 
+const dohvatiEvidenciju = async () => {
+  try {
+    if (odabraniNastavnik.value) {
+      const response = await axios.get(
+        `http://localhost:3000/api/RIWA_Evidencija?nastavnikId=${odabraniNastavnik.value}`,
+      )
+      if (response.data.length > 0) {
+        odabranaEvidencija.value = response.data[0]
+        odabraneEdukacije.value = odabranaEvidencija.value.idEdukacije
+        odabraniTermin.value = odabranaEvidencija.value.idTermina
+      } else {
+        alert('Nema zapisa za odabranog nastavnika.')
+      }
+    }
+  } catch (error) {
+    console.error('Pogreška dohvaćanja evidencije:', error)
+  }
+}
+
 const onSave = async () => {
   try {
     await axios.post('http://localhost:3000/api/RIWA_Evidencija', {
@@ -140,7 +162,6 @@ const onSave = async () => {
       idNastavnika: odabraniNastavnik.value,
       idTermina: odabraniTermin.value,
     })
-    console.log('Podaci uspješno spremljeni')
     alert('Evidencija uspješno spremljena!')
 
     odabraneEdukacije.value = null
@@ -153,13 +174,17 @@ const onSave = async () => {
 }
 
 const onEdit = async () => {
+  if (!odabraniNastavnik.value) {
+    alert('Molimo odaberite svoje ime kako biste mogli izmijeniti zapis.')
+    return
+  }
+
   try {
     await axios.put('http://localhost:3000/api/RIWA_Evidencija', {
       idEdukacija: odabraneEdukacije.value,
       idNastavnika: odabraniNastavnik.value,
       idTermina: odabraniTermin.value,
     })
-    console.log('Podaci uspješno uređeni')
     alert('Evidencija uspješno uređena!')
 
     odabraneEdukacije.value = null
@@ -180,7 +205,6 @@ const onDelete = async () => {
         idTermina: odabraniTermin.value,
       },
     })
-    console.log('Podaci uspješno obrisani')
     alert('Evidencija uspješno obrisana!')
 
     odabraneEdukacije.value = null
