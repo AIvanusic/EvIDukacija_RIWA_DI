@@ -196,27 +196,27 @@ app.delete('/api/RIWA_Evidencija', async (req, res, next) => {
   }
 })
 
-// mislim da je ovo za brisanje - iz probne tablice za kontrolu rada na samoj stranici. Provjeriti!
-app.get('/api/evidencija', (req, res) => {
-  res.sendFile(__dirname + '/Prikazevidencije.html')
-})
+// ovo je iz probne tablice za kontrolu rada na samoj stranici
+//app.get('/api/evidencija', (req, res) => {
+//res.sendFile(__dirname + '/Prikazevidencije.html')
+//})
 
-app.get('/api/evidencija', async function (req, res, next) {
-  try {
-    const result = await query(`
-      SELECT e.idZapisa AS idEvidencije, p.imeIPrezimePolaznika AS polaznik, n.imeIPrezimeNastavnika AS nastavnik, ed.nazivEdukacije AS edukacija, t.termin
-      FROM RIWA_Evidencija e
-      LEFT JOIN RIWA_Polaznik p ON e.idPolaznika = p.idPolaznika
-      LEFT JOIN RIWA_Nastavnik n ON e.idNastavnika = n.idNastavnika
-      LEFT JOIN RIWA_Edukacija ed ON e.idEdukacije = ed.idEdukacije
-      LEFT JOIN RIWA_Termin t ON e.idTermina = t.idTermina
-    `)
-    res.json(result)
-  } catch (err) {
-    console.error('Greška pri dohvaćanju evidencije: ', err.message)
-    next(err)
-  }
-})
+//app.get('/api/evidencija', async function (req, res, next) {
+//try {
+//const result = await query(`
+//SELECT e.idZapisa AS idEvidencije, p.imeIPrezimePolaznika AS polaznik, n.imeIPrezimeNastavnika AS nastavnik, ed.nazivEdukacije AS edukacija, t.termin
+//FROM RIWA_Evidencija e
+//LEFT JOIN RIWA_Polaznik p ON e.idPolaznika = p.idPolaznika
+//LEFT JOIN RIWA_Nastavnik n ON e.idNastavnika = n.idNastavnika
+//LEFT JOIN RIWA_Edukacija ed ON e.idEdukacije = ed.idEdukacije
+//LEFT JOIN RIWA_Termin t ON e.idTermina = t.idTermina
+//`)
+//res.json(result)
+//} catch (err) {
+//console.error('Greška pri dohvaćanju evidencije: ', err.message)
+//next(err)
+//}
+//})
 
 app.get('/api/Administrator_Edukacija', async function (req, res, next) {
   try {
@@ -288,6 +288,7 @@ app.get('/api/Administrator_Termin', async function (req, res, next) {
     next(err)
   }
 })
+
 app.put('/api/Administrator_Termin', async function (req, res, next) {
   try {
     const sveIzTermina = await query(
