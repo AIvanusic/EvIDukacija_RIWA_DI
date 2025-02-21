@@ -119,7 +119,7 @@
                   v-model="urediTermin.termin"
                   label="Termin održavanja edukacije"
                   lazy-rules
-                  :rules="[(val) => (val && val.lenth > 0) || 'Unesite termin']"
+                  :rules="[(val) => (val && val.length > 0) || 'Unesite termin']"
                 />
                 <div>
                   <q-btn label="Spremi termin" type="submit" color="primary" />
@@ -274,11 +274,13 @@ const onAddRowTermini = () => {
   urediTermin.value.idTermina = null
   urediTermin.value.termin = null
   showFormTermini.value = true
+  console.log('Stanje termina nakon dodavanja:', termini.value)
 }
 
 const onEditRowTermini = () => {
   urediTermin.value = Object.assign({}, RIWA_Termin.value[0])
   showFormTermini.value = true
+  console.log('Stanje termina nakon dodavanja:', termini.value)
 }
 
 const onCloseTermin = () => {
