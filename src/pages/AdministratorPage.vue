@@ -83,6 +83,45 @@
           </q-card>
         </div>
 
+        <!-- ovdje će se raditi s nastavnicima na svim edukacijama-->
+
+        <div>
+          <q-card flat bordered class="q-pa-sm">
+            <q-card-section>
+              <q-table
+                title="Nastavnici"
+                :rows="nastavnici"
+                :columns="columnsNastavnici"
+                row-key="idNastavnika"
+                flat
+                selection="single"
+                v-model:selected="RIWA_Nastavnik"
+                @update:selected="onSelectionRowNastavnici"
+              >
+                <template v-slot:top>
+                  <q-btn color="primary" label="Pregledaj nastavnike" @click="onReadNastavnici" />
+                  <q-space />
+                  <q-btn color="primary" label="Novi nastavnik" @click="onAddRowNastavnici" />
+                  <q-btn
+                    v-if="RIWA_Nastavnik.length !== 0"
+                    class="q-ml-sm"
+                    color="primary"
+                    label="Izmijeni podatke o nastavniku"
+                    @click="onEditRowNastavnici"
+                  />
+                  <q-btn
+                    v-if="RIWA_Nastavnik.length !== 0"
+                    class="q-ml-sm"
+                    color="red"
+                    label="Obriši nastavnika s popisa"
+                    @click="onDeleteRowNastavnici"
+                  />
+                </template>
+              </q-table>
+            </q-card-section>
+          </q-card>
+        </div>
+
         <!-- Ako želite prikazati selektirane podatke za debug, odkomentirajte sljedeće -->
         <div class="q-pa-md">{{ RIWA_Edukacija }}</div>
         <div class="q-pa-md" v-if="showFormEdukacije">
@@ -134,6 +173,43 @@
             </q-card-section>
           </q-card>
         </div>
+
+        <div class="q-pa-md" v-if="showFormNastavnici">
+          <q-card flat bordered class="q-pa-sm">
+            <q-card-section>
+              <q-form @submit="onSaveNastavnici">
+                <q-input
+                  filled
+                  v-model="urediNastavnika.titulaNastavnika"
+                  label="Titula nastavnika"
+                  lazy-rules
+                  :rules="[
+                    (val) => (val && val.length > 0) || 'Unesite podatke o nastavniku: titulu',
+                  ]"
+                />
+                <q-input
+                  filled
+                  v-model="urediNastavnika.imeIPrezimeNastavnika"
+                  label="Ime i prezime nastavnika"
+                  lazy-rules
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) || 'Unesite podatke o nastavniku: ime i prezime',
+                  ]"
+                />
+                <div>
+                  <q-btn label="Spremi podatke o nastavniku" type="submit" color="primary" />
+                  <q-btn
+                    label="Zatvori unos podataka o nastavniku"
+                    color="primary"
+                    @click="onCloseNastavnici"
+                    class="q-ml-sm"
+                  />
+                </div>
+              </q-form>
+            </q-card-section>
+          </q-card>
+        </div>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -158,6 +234,7 @@ const columnsEdukacije = [
     sortable: true,
   },
 ]
+
 const columnsTermini = [
   {
     name: 'termin',
@@ -168,6 +245,24 @@ const columnsTermini = [
     //sortable: true
   },
 ]
+
+const columnsNastavnici = [
+  {
+    name: 'titulaNastavnika',
+    label: 'Titula nastavnika',
+    align: 'left',
+    field: 'titulaNastavnika',
+  },
+  {
+    name: 'imeIPrezimeNastavnika',
+    required: true,
+    label: 'Ime i prezime nastavnika',
+    align: 'left',
+    field: 'imeIPrezimeNastavnika',
+    sortable: true,
+  },
+]
+
 const edukacije = ref([])
 const RIWA_Edukacija = ref([])
 const urediEdukaciju = ref({})
@@ -177,6 +272,11 @@ const termini = ref([])
 const RIWA_Termin = ref([])
 const urediTermin = ref({})
 const showFormTermini = ref(false)
+
+const nastavnici = ref([])
+const RIWA_Nastavnik = ref([])
+const urediNastavnika = ref({})
+const showFormNastavnici = ref(false)
 
 // ovo je za rad administratora s edukacijama
 const onReadEdukacije = async () => {
@@ -308,8 +408,78 @@ const onSaveTermini = async () => {
   }
 }
 
+// ovo je za rad administratora s nastavnicima
+const onReadNastavnici = async () => {
+  try {
+    const sveIzNastavnika = await api.get('/Administrator_Nastavnik')
+    nastavnici.value = sveIzNastavnika.data
+    RIWA_Nastavnik.value = []
+    showFormNastavnici.value = false
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const onDeleteRowNastavnici = async () => {
+  try {
+    const sveIzNastavnika = await api.delete('/Administrator_Nastavnik', {
+      data: {
+        idNastavnika: RIWA_Nastavnik.value[0].idNastavnika,
+      },
+    })
+    onReadNastavnici()
+    RIWA_Nastavnik.value = []
+    console.log('Novi zapis:', sveIzNastavnika.data)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const onAddRowNastavnici = () => {
+  RIWA_Nastavnik.value = []
+  urediNastavnika.value.idNastavnika = null
+  urediNastavnika.value.titulaNastavnika = null
+  urediNastavnika.value.imeIPrezimeNastavnika = null
+  showFormNastavnici.value = true
+  console.log('Stanje nastavnika nakon dodavanja:', nastavnici.value)
+}
+
+const onEditRowNastavnici = () => {
+  urediNastavnika.value = Object.assign({}, RIWA_Nastavnik.value[0])
+  showFormNastavnici.value = true
+  console.log('Stanje nastavnika nakon dodavanja:', nastavnici.value)
+}
+
+const onCloseNastavnici = () => {
+  urediNastavnika.value.idNastavnika = null
+  urediNastavnika.value.titulaNastavnika = null
+  urediNastavnika.value.imeIPrezimeNastavnika = null
+  showFormNastavnici.value = false
+}
+
+const onSelectionRowNastavnici = () => {
+  urediNastavnika.value.idNastavnika = null
+  urediNastavnika.value.titulaNastavnika = null
+  urediNastavnika.value.imeIPrezimeNastavnika = null
+  showFormTermini.value = false
+}
+
+const onSaveNastavnici = async () => {
+  try {
+    if (urediNastavnika.value.idNastavnika === null) {
+      await api.post('/Administrator_Nastavnik', urediNastavnika.value)
+    } else {
+      await api.put('/Administrator_Nastavnik', urediNastavnika.value)
+    }
+    onReadNastavnici()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 onMounted(() => {
   onReadEdukacije()
   onReadTermini()
+  onReadNastavnici()
 })
 </script>
