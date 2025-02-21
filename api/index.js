@@ -142,7 +142,7 @@ app.post('/api/RIWA_Evidencija', async (req, res, next) => {
     // Upit za unos u tablicu RIWA_Evidencija
     const [result] = await pool.query(
       'INSERT INTO RIWA_Evidencija (idEdukacije, idNastavnika, idTermina) VALUES (?, ?, ?)',
-      [idEdukacija, idNastavnika, idTermina],
+      [idEdukacija.idEdukacije, idNastavnika.idNastavnika, idTermina.idTermina],
     )
 
     res.json({ message: 'Evidencija uspješno spremljena!', idEvidencija: result.insertId })
@@ -164,7 +164,7 @@ app.put('/api/RIWA_Evidencija', async (req, res, next) => {
     // Upit za uređivanje u tablici RIWA_Evidencija
     await pool.query(
       'UPDATE RIWA_Evidencija SET idNastavnika = ?, idTermina = ? WHERE idEdukacije = ?',
-      [idNastavnika, idTermina, idEdukacija],
+      [idNastavnika.idNastavnika, idTermina.idTermina, idEdukacija.idEdukacije],
     )
 
     res.json({ message: 'Evidencija uspješno uređena!' })
@@ -186,7 +186,7 @@ app.delete('/api/RIWA_Evidencija', async (req, res, next) => {
     // Upit za brisanje iz tablice RIWA_Evidencija
     await pool.query(
       'DELETE FROM RIWA_Evidencija WHERE idEdukacije = ? AND idNastavnika = ? AND idTermina = ?',
-      [idEdukacija, idNastavnika, idTermina],
+      [idEdukacija.idEdukacije, idNastavnika.idNastavnika, idTermina.idTermina],
     )
 
     res.json({ message: 'Evidencija uspješno obrisana!' })
