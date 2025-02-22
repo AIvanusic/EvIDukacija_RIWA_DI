@@ -141,7 +141,7 @@
                 @update:selected="onSelectionRowPolaznici"
               >
                 <template v-slot:top>
-                  <q-btn color="primary" label="Pregledaj polaznike" @click="onReadPolaznici" />
+                  <q-btn color="primary" label="Pregled polaznika" @click="onReadPolaznici" />
                   <q-space />
                   <q-btn color="primary" label="Novi polaznik" @click="onAddRowPolaznici" />
                   <q-btn
@@ -255,7 +255,7 @@
               <q-form @submit="onSavePolaznici">
                 <q-input
                   filled
-                  v-model="urediPolaznike.imeIPrezimePolaznika"
+                  v-model="urediPolaznika.imeIPrezimePolaznika"
                   label="Podaci o polazniku: ime i prezime"
                   lazy-rules
                   :rules="[(val) => (val && val.length > 0) || 'Unesite ime i prezime polaznika']"
