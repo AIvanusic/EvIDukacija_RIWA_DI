@@ -211,6 +211,181 @@ app.get('/api/evidencija', async function (req, res, next) {
   }
 })
 
+// Ovdje administrator treba raditi sa svime po Edukacijama
+app.get('/api/Administrator_Edukacija', async function (req, res, next) {
+  try {
+    const sveIzEdukacija = await query('SELECT * FROM RIWA_Edukacija')
+    res.json(sveIzEdukacija)
+  } catch (err) {
+    console.error('Greška u čitanju popisa edukacija ', err.message)
+    next(err)
+  }
+})
+
+app.put('/api/Administrator_Edukacija', async function (req, res, next) {
+  try {
+    const sveIzEdukacija = await query(
+      'UPDATE RIWA_Edukacija SET nazivEdukacije=:nazivEdukacije WHERE idEdukacije=:idEdukacije',
+      {
+        idEdukacije: req.body.idEdukacije,
+        nazivEdukacije: req.body.nazivEdukacije,
+      },
+    )
+    res.json(sveIzEdukacija)
+  } catch (err) {
+    console.error('Greška u ažuriranju popisa edukacija ', err.message)
+    next(err)
+  }
+})
+
+app.post('/api/Administrator_Edukacija', async function (req, res, next) {
+  try {
+    const sveIzEdukacija = await query(
+      'INSERT INTO RIWA_Edukacija (nazivEdukacije) VALUES (:nazivEdukacije)',
+      {
+        nazivEdukacije: req.body.nazivEdukacije,
+      },
+    )
+    res.json(sveIzEdukacija)
+  } catch (err) {
+    console.error('Greška u ubacivanju nove edukacije u popis edukacija ', err.message)
+    next(err)
+  }
+})
+
+app.delete('/api/Administrator_Edukacija', async function (req, res, next) {
+  console.log(req.body)
+  try {
+    const sveIzEdukacija = await query(
+      'DELETE FROM RIWA_Edukacija WHERE idEdukacije=:idEdukacije',
+      {
+        idEdukacije: req.body.idEdukacije,
+      },
+    )
+    res.json(sveIzEdukacija)
+  } catch (err) {
+    console.error('Greška u brisanju edukacije s popisa edukacija ', err.message)
+    next(err)
+  }
+})
+
+// rad administratora na terminima - sve CRUD operacije
+app.get('/api/Administrator_Termin', async function (req, res, next) {
+  try {
+    const sveIzTermina = await query('SELECT * FROM RIWA_Termin')
+
+    res.json(sveIzTermina)
+  } catch (err) {
+    console.error('Greška u čitanju održanih temina na edukacijama ', err.message)
+    next(err)
+  }
+})
+
+app.put('/api/Administrator_Termin', async function (req, res, next) {
+  try {
+    const sveIzTermina = await query(
+      'UPDATE RIWA_Termin SET termin=:termin WHERE idTermina=:idTermina',
+      {
+        idTermina: req.body.idTermina,
+        termin: req.body.termin,
+      },
+    )
+    res.json(sveIzTermina)
+  } catch (err) {
+    console.error('Greška u ažuriranju popisa termina edukacija ', err.message)
+    next(err)
+  }
+})
+
+app.post('/api/Administrator_Termin', async function (req, res, next) {
+  try {
+    const sveIzTermina = await query('INSERT INTO RIWA_Termin (termin) VALUES (:termin)', {
+      termin: req.body.termin,
+    })
+
+    res.json(sveIzTermina)
+  } catch (err) {
+    console.error('Greška u ubacivanju novog termina održane edukacije: ', err.message)
+    next(err)
+  }
+})
+app.delete('/api/Administrator_Termin', async function (req, res, next) {
+  console.log(req.body)
+  try {
+    const sveIzTermina = await query('DELETE FROM RIWA_Termin WHERE idTermina=:idTermina', {
+      idTermina: req.body.idTermina,
+    })
+
+    res.json(sveIzTermina)
+  } catch (err) {
+    console.error('Greška u brisanju termina održavanja edukacije ', err.message)
+    next(err)
+  }
+})
+
+// Ovdje administratori ima mogućnosti raditi s nastavnicima
+
+app.get('/api/Administrator_Nastavnik', async function (req, res, next) {
+  try {
+    const sveIzNastavnika = await query('SELECT * FROM RIWA_Nastavnik')
+
+    res.json(sveIzNastavnika)
+  } catch (err) {
+    console.error('Greška u čitanju popisa nastavnika ', err.message)
+    next(err)
+  }
+})
+
+app.put('/api/Administrator_Nastavnik', async function (req, res, next) {
+  try {
+    const sveIzNastavnika = await query(
+      'UPDATE RIWA_Nastavnik SET titulaNastavnika=:titulaNastavnika, imeIPrezimeNastavnika=:imeIPrezimeNastavnika WHERE idNastavnika=:idNastavnika',
+      {
+        idNastavnika: req.body.idNastavnika,
+        titulaNastavnika: req.body.titulaNastavnika,
+        imeIPrezimeNastavnika: req.body.imeIPrezimeNastavnika,
+      },
+    )
+    res.json(sveIzNastavnika)
+  } catch (err) {
+    console.error('Greška u ažuriranju popisa nastavnika ', err.message)
+    next(err)
+  }
+})
+
+app.post('/api/Administrator_Nastavnik', async function (req, res, next) {
+  try {
+    const sveIzNastavnika = await query(
+      'INSERT INTO RIWA_Nastavnik (titulaNastavnika, imeIPrezimeNastavnika) VALUES (:titulaNastavnika, :imeIPrezimeNastavnika)',
+      {
+        titulaNastavnika: req.body.titulaNastavnika,
+        imeIPrezimeNastavnika: req.body.imeIPrezimeNastavnika,
+      },
+    )
+    res.json(sveIzNastavnika)
+  } catch (err) {
+    console.error('Greška u ubacivanju novog nastavnika ', err.message)
+    next(err)
+  }
+})
+
+app.delete('/api/Administrator_Nastavnik', async function (req, res, next) {
+  console.log(req.body)
+  try {
+    const sveIzNastavnika = await query(
+      'DELETE FROM RIWA_Nastavnik WHERE idNastavnika=:idNastavnika',
+      {
+        idNastavnika: req.body.idNastavnika,
+      },
+    )
+
+    res.json(sveIzNastavnika)
+  } catch (err) {
+    console.error('Greška u brisanju nastavnika s popisa nastavnika ', err.message)
+    next(err)
+  }
+})
+
 // Administrator manipulira polaznicima - CRUD
 app.get('/api/Administrator_Polaznik', async function (req, res, next) {
   try {
@@ -241,7 +416,7 @@ app.put('/api/Administrator_Polaznik', async function (req, res, next) {
 app.post('/api/Administrator_Polaznik', async function (req, res, next) {
   try {
     const sveIzPolaznika = await query(
-      'INSERT INTO RIWA_Polaznik (imeIPrezimeNastavnika) VALUES (:imeIPrezimeNastavnika)',
+      'INSERT INTO RIWA_Polaznik (imeIPrezimePolaznika) VALUES (:imeIPrezimePolaznika)',
       {
         imeIPrezimePolaznika: req.body.imeIPrezimePolaznika,
       },

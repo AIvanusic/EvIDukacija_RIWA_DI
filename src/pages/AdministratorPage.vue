@@ -43,9 +43,34 @@
             </q-card-section>
           </q-card>
         </div>
+        <!--<div class="q-pa-md">{{ RIWA_Edukacija }}</div>-->
+
+        <div class="q-pa-md" v-if="showFormEdukacije">
+          <q-card flat bordered class="q-pa-sm">
+            <q-card-section>
+              <q-form @submit="onSaveEdukacije">
+                <q-input
+                  filled
+                  v-model="urediEdukaciju.nazivEdukacije"
+                  label="Naziv edukacije"
+                  lazy-rules
+                  :rules="[(val) => (val && val.length > 0) || 'Unesite naziv edukacije']"
+                />
+                <div>
+                  <q-btn label="Spremi Edukaciju" type="submit" color="primary" />
+                  <q-btn
+                    label="Zatvori popis edukacija"
+                    color="primary"
+                    @click="onCloseEdukacije"
+                    class="q-ml-sm"
+                  />
+                </div>
+              </q-form>
+            </q-card-section>
+          </q-card>
+        </div>
 
         <!-- ovdje će se raditi s terminima na svim edukacijama-->
-
         <div>
           <q-card flat bordered class="q-pa-sm">
             <q-card-section>
@@ -79,6 +104,32 @@
                   />
                 </template>
               </q-table>
+            </q-card-section>
+          </q-card>
+        </div>
+        <!--<div class="q-pa-md">{{ RIWA_Termin }}</div>-->
+
+        <div class="q-pa-md" v-if="showFormTermini">
+          <q-card flat bordered class="q-pa-sm">
+            <q-card-section>
+              <q-form @submit="onSaveTermini">
+                <q-input
+                  filled
+                  v-model="urediTermin.termin"
+                  label="Termin održavanja edukacije"
+                  lazy-rules
+                  :rules="[(val) => (val && val.length > 0) || 'Unesite termin']"
+                />
+                <div>
+                  <q-btn label="Spremi termin" type="submit" color="primary" />
+                  <q-btn
+                    label="Zatvori unos termina"
+                    color="primary"
+                    @click="onCloseTermin"
+                    class="q-ml-sm"
+                  />
+                </div>
+              </q-form>
             </q-card-section>
           </q-card>
         </div>
@@ -125,6 +176,40 @@
             </q-card-section>
           </q-card>
         </div>
+        <!--<div class="q-pa-md">{{ RIWA_Nastavnik }}</div>-->
+
+        <div class="q-pa-md" v-if="showFormNastavnici">
+          <q-card flat bordered class="q-pa-sm">
+            <q-card-section>
+              <q-form @submit="onSaveNastavnici">
+                <q-input
+                  filled
+                  v-model="urediNastavnika.titulaNastavnika"
+                  label="Titula nastavnika"
+                />
+                <q-input
+                  filled
+                  v-model="urediNastavnika.imeIPrezimeNastavnika"
+                  label="Ime i prezime nastavnika"
+                  lazy-rules
+                  :rules="[
+                    (val) =>
+                      (val && val.length > 0) || 'Unesite podatke o nastavniku: ime i prezime',
+                  ]"
+                />
+                <div>
+                  <q-btn label="Spremi podatke o nastavniku" type="submit" color="primary" />
+                  <q-btn
+                    label="Zatvori unos podataka o nastavniku"
+                    color="primary"
+                    @click="onCloseNastavnici"
+                    class="q-ml-sm"
+                  />
+                </div>
+              </q-form>
+            </q-card-section>
+          </q-card>
+        </div>
 
         <!-- ovdje će se raditi s polaznicima na svim edukacijama-->
         <div>
@@ -163,91 +248,7 @@
             </q-card-section>
           </q-card>
         </div>
-
-        <div class="q-pa-md">{{ RIWA_Edukacija }}</div>
-
-        <div class="q-pa-md" v-if="showFormEdukacije">
-          <q-card flat bordered class="q-pa-sm">
-            <q-card-section>
-              <q-form @submit="onSaveEdukacije">
-                <q-input
-                  filled
-                  v-model="urediEdukaciju.nazivEdukacije"
-                  label="Naziv edukacije"
-                  lazy-rules
-                  :rules="[(val) => (val && val.length > 0) || 'Unesite naziv edukacije']"
-                />
-                <div>
-                  <q-btn label="Spremi Edukaciju" type="submit" color="primary" />
-                  <q-btn
-                    label="Zatvori popis edukacija"
-                    color="primary"
-                    @click="onCloseEdukacije"
-                    class="q-ml-sm"
-                  />
-                </div>
-              </q-form>
-            </q-card-section>
-          </q-card>
-        </div>
-
-        <div class="q-pa-md" v-if="showFormTermini">
-          <q-card flat bordered class="q-pa-sm">
-            <q-card-section>
-              <q-form @submit="onSaveTermini">
-                <q-input
-                  filled
-                  v-model="urediTermin.termin"
-                  label="Termin održavanja edukacije"
-                  lazy-rules
-                  :rules="[(val) => (val && val.length > 0) || 'Unesite termin']"
-                />
-                <div>
-                  <q-btn label="Spremi termin" type="submit" color="primary" />
-                  <q-btn
-                    label="Zatvori unos termina"
-                    color="primary"
-                    @click="onCloseTermin"
-                    class="q-ml-sm"
-                  />
-                </div>
-              </q-form>
-            </q-card-section>
-          </q-card>
-        </div>
-
-        <div class="q-pa-md" v-if="showFormNastavnici">
-          <q-card flat bordered class="q-pa-sm">
-            <q-card-section>
-              <q-form @submit="onSaveNastavnici">
-                <q-input
-                  filled
-                  v-model="urediNastavnika.titulaNastavnika"
-                  label="Titula nastavnika"
-                />
-                <q-input
-                  filled
-                  v-model="urediNastavnika.imeIPrezimeNastavnika"
-                  label="Ime i prezime nastavnika"
-                  lazy-rules
-                  :rules="[
-                    (val) =>
-                      (val && val.length > 0) || 'Unesite podatke o nastavniku: ime i prezime',
-                  ]"
-                />
-                <div>
-                  <q-btn label="Spremi podatke o nastavniku" type="submit" color="primary" />
-                  <q-btn
-                    label="Zatvori unos podataka o nastavniku"
-                    color="primary"
-                    @click="onCloseNastavnici"
-                    class="q-ml-sm"
-                  />
-                </div>
-              </q-form>
-            </q-card-section>
-          </q-card>
-        </div>
+        <!--<div class="q-pa-md">{{ RIWA_Polaznik }}</div>-->
 
         <div class="q-pa-md" v-if="showFormPolaznici">
           <q-card flat bordered class="q-pa-sm">
