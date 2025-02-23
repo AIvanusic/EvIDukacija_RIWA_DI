@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 
 defineOptions({
@@ -140,7 +140,7 @@ const dohvatiEvidenciju = async () => {
   try {
     if (odabraniNastavnik.value) {
       const response = await axios.get(
-        `http://localhost:3000/api/RIWA_Evidencija?nastavnikId=${odabraniNastavnik.value}`,
+        `http://localhost:3000/api/RIWA_Evidencija?nastavnikId=${odabraniNastavnik.value.idNastavnika}`,
       )
       if (response.data.length > 0) {
         odabranaEvidencija.value = response.data[0]
@@ -172,7 +172,6 @@ const onSave = async () => {
     alert('Pogreška spremanja podataka')
   }
 }
-
 const onEdit = async () => {
   if (!odabraniNastavnik.value) {
     alert('Molimo odaberite svoje ime kako biste mogli izmijeniti zapis.')
@@ -197,11 +196,21 @@ const onEdit = async () => {
 }
 
 const onDelete = async () => {
+  if (
+    !odabraniNastavnik.value ||
+    !odabraniNastavnik.value.idNastavnika ||
+    !odabraneEdukacije.value ||
+    !odabraniTermin.value
+  ) {
+    alert('Molimo odaberite svoje ime, edukaciju i termin kako biste mogli obrisati zapis.')
+    return
+  }
+
   try {
     await axios.delete('http://localhost:3000/api/RIWA_Evidencija', {
       data: {
         idEdukacija: odabraneEdukacije.value,
-        idNastavnika: odabraniNastavnik.value,
+        idNastavnika: odabraniNastavnik.value.idNastavnika,
         idTermina: odabraniTermin.value,
       },
     })
@@ -221,6 +230,12 @@ onMounted(() => {
   dohvatiEdukacije()
   dohvatiNastavnike()
   dohvatiTermine()
+})
+
+watch(odabraniNastavnik, () => {
+  odabraneEdukacije.value = null
+  odabraniTermin.value = null
+  console.log('Odabrani nastavnik promijenjen:', odabraniNastavnik.value)
 })
 </script>
 
