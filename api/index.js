@@ -157,8 +157,8 @@ app.put('/api/RIWA_Evidencija', async (req, res, next) => {
 
     // Upit za uređivanje u tablici RIWA_Evidencija
     await pool.query(
-      'UPDATE RIWA_Evidencija SET idNastavnika = ?, idTermina = ? WHERE idEdukacije = ?',
-      [idNastavnika, idTermina, idEdukacija],
+      'UPDATE RIWA_Evidencija SET idEdukacije = ? WHERE idNastavnika = ? AND idTermina = ?',
+      [idEdukacija, idNastavnika, idTermina],
     )
 
     res.json({ message: 'Evidencija uspješno uređena!' })
