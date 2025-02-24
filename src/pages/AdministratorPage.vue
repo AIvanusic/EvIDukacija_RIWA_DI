@@ -3,7 +3,51 @@
     <q-page-container>
       <q-page>
         <div class="q-pa-md">
-          <!-- ovdje će se upravljati edukacijama-->
+          <!-- Pregled upisanih evidencija -->
+          <q-card flat bordered class="q-pa-sm">
+            <q-card-section>
+              <q-btn
+                color="primary"
+                label="Pregled upisanih evidencija"
+                @click="promijeniPrikazEvidencija"
+              />
+              <div v-if="showEvidencije">
+                <q-select
+                  v-model="odabranaEdukacija"
+                  :options="edukacije"
+                  label="Odaberite edukaciju"
+                  option-value="idEdukacije"
+                  option-label="nazivEdukacije"
+                  @change="dohvatiTermineEdukacije"
+                />
+                <q-select
+                  v-if="terminiEdukacije.length > 0"
+                  v-model="odabraniTerminEdukacije"
+                  :options="terminiEdukacije"
+                  label="Odaberite termin"
+                  option-value="idTermina"
+                  option-label="termin"
+                  @change="dohvatiEvidenciju"
+                />
+                <div v-if="evidencija.length > 0">
+                  <p>
+                    <strong>Nastavnik:</strong> {{ evidencija[0].titulaNastavnika }}
+                    {{ evidencija[0].imeIPrezimeNastavnika }}
+                  </p>
+                  <p><strong>Polaznici:</strong></p>
+                  <ul>
+                    <li v-for="polaznik in evidencija" :key="polaznik.idPolaznika">
+                      {{ polaznik.imeIPrezimePolaznika }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+
+        <!-- ovdje će se upravljati edukacijama-->
+        <div class="q-pa-md">
           <q-card flat bordered class="q-pa-sm">
             <q-card-section>
               <q-table
@@ -135,7 +179,6 @@
         </div>
 
         <!-- ovdje će se raditi s nastavnicima na svim edukacijama-->
-
         <div>
           <q-card flat bordered class="q-pa-sm">
             <q-card-section>
@@ -357,6 +400,34 @@ const polaznici = ref([])
 const RIWA_Polaznik = ref([])
 const urediPolaznika = ref({})
 const showFormPolaznici = ref(false)
+
+const showEvidencije = ref(false)
+const odabranaEdukacija = ref(null)
+const terminiEdukacije = ref([])
+const odabraniTerminEdukacije = ref(null)
+const evidencija = ref([])
+
+const promijeniPrikazEvidencija = () => {
+  showEvidencije.value = !showEvidencije.value
+}
+
+const dohvatiTermineEdukacije = async () => {
+  try {
+    const response = await api.get(`/Administrator_Termin/${odabranaEdukacija.value}`)
+    terminiEdukacije.value = response.data
+  } catch (error) {
+    console.error('Pogreška dohvaćanja termina za edukaciju:', error)
+  }
+}
+
+const dohvatiEvidenciju = async () => {
+  try {
+    const response = await api.get(`/Administrator_Evidencija/${odabraniTerminEdukacije.value}`)
+    evidencija.value = response.data
+  } catch (error) {
+    console.error('Pogreška dohvaćanja evidencije:', error)
+  }
+}
 
 // ovo je za rad administratora s edukacijama
 const onReadEdukacije = async () => {
