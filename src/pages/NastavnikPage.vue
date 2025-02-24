@@ -49,7 +49,7 @@
               :options="nastavnici"
               label="Ime i prezime nastavnika izvođača edukacije"
               option-value="idNastavnika"
-              option-label="imeIPrezimeNastavnika"
+              option-label="nastavnikLabel"
               @change="dohvatiEvidenciju"
             />
             <q-select
@@ -121,7 +121,10 @@ const dohvatiEdukacije = async () => {
 const dohvatiNastavnike = async () => {
   try {
     const response = await axios.get('http://localhost:3000/api/RIWA_Nastavnik')
-    nastavnici.value = response.data
+    nastavnici.value = response.data.map((nastavnik) => ({
+      ...nastavnik,
+      nastavnikLabel: `${nastavnik.titulaNastavnika || ''} ${nastavnik.imeIPrezimeNastavnika || ''}`,
+    }))
   } catch (error) {
     console.error('Pogreška dohvaćanja podataka o nastavnicima:', error)
   }
@@ -181,9 +184,10 @@ const onEdit = async () => {
 
   try {
     await axios.put('http://localhost:3000/api/RIWA_Evidencija', {
-      idEdukacija: odabraneEdukacije.value,
+      idEdukacija: odabranaEvidencija.value.idEdukacije,
       idNastavnika: odabraniNastavnik.value,
       idTermina: odabraniTermin.value,
+      noviIdEdukacija: odabraneEdukacije.value,
     })
     alert('Evidencija uspješno uređena!')
 
