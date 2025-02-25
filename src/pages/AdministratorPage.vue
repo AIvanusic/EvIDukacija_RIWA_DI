@@ -46,10 +46,37 @@
           </q-card>
         </div>
 
-        <!-- ovdje će se upravljati edukacijama-->
+        <!-- ovdje će Administrator upravljati edukacijama-->
+        <!--Želim da gumbi stoje na vrhu, u istom q-cardu, ali iznad tablice-->
         <div class="q-pa-md">
           <q-card flat bordered class="q-pa-sm">
-            <q-card-section>
+            <q-card-section class="row justify-between">
+              <div>
+                <q-btn
+                  color="primary"
+                  label="Pregled ponuđenih edukacija"
+                  @click="promijeniPrikazEdukacija"
+                />
+              </div>
+              <div>
+                <q-btn color="primary" label="Nova edukacija" @click="onAddRowEdukacije" />
+                <q-btn
+                  v-if="RIWA_Edukacija.length !== 0"
+                  class="q-ml-sm"
+                  color="primary"
+                  label="Izmijeni edukaciju"
+                  @click="onEditRowEdukacije"
+                />
+                <q-btn
+                  v-if="RIWA_Edukacija.length !== 0"
+                  class="q-ml-sm"
+                  color="red"
+                  label="Obriši edukaciju"
+                  @click="onDeleteRowEdukacija"
+                />
+              </div>
+            </q-card-section>
+            <q-card-section v-if="showEdukacije">
               <q-table
                 title="Edukacije"
                 :rows="edukacije"
@@ -59,34 +86,11 @@
                 selection="single"
                 v-model:selected="RIWA_Edukacija"
                 @update:selected="onSelectionRowEdukacije"
-              >
-                <template v-slot:top>
-                  <q-btn
-                    color="primary"
-                    label="Pregled ponuđenih edukacija"
-                    @click="onReadEdukacije"
-                  />
-                  <q-space />
-                  <q-btn color="primary" label="Nova edukacija" @click="onAddRowEdukacije" />
-                  <q-btn
-                    v-if="RIWA_Edukacija.length !== 0"
-                    class="q-ml-sm"
-                    color="primary"
-                    label="Izmijeni edukaciju"
-                    @click="onEditRowEdukacije"
-                  />
-                  <q-btn
-                    v-if="RIWA_Edukacija.length !== 0"
-                    class="q-ml-sm"
-                    color="red"
-                    label="Obriši edukaciju"
-                    @click="onDeleteRowEdukacija"
-                  />
-                </template>
-              </q-table>
+              />
             </q-card-section>
           </q-card>
         </div>
+
         <!--<div class="q-pa-md">{{ RIWA_Edukacija }}</div>-->
 
         <div class="q-pa-md" v-if="showFormEdukacije">
@@ -114,10 +118,36 @@
           </q-card>
         </div>
 
-        <!-- ovdje će se raditi s terminima na svim edukacijama-->
-        <div>
+        <!-- ovdje će administrator raditi s terminima na svim edukacijama-->
+        <div class="q-pa-md">
           <q-card flat bordered class="q-pa-sm">
-            <q-card-section>
+            <q-card-section class="row justify-between">
+              <div>
+                <q-btn
+                  color="primary"
+                  label="Pregled svih termina"
+                  @click="promijeniPrikazTermina"
+                />
+              </div>
+              <div>
+                <q-btn color="primary" label="Novi termin" @click="onAddRowTermini" />
+                <q-btn
+                  v-if="RIWA_Termin.length !== 0"
+                  class="q-ml-sm"
+                  color="primary"
+                  label="Izmijeni termin"
+                  @click="onEditRowTermini"
+                />
+                <q-btn
+                  v-if="RIWA_Termin.length !== 0"
+                  class="q-ml-sm"
+                  color="red"
+                  label="Obriši termin"
+                  @click="onDeleteRowTermini"
+                />
+              </div>
+            </q-card-section>
+            <q-card-actions v-if="showTermini">
               <q-table
                 title="Termini"
                 :rows="termini"
@@ -127,28 +157,8 @@
                 selection="single"
                 v-model:selected="RIWA_Termin"
                 @update:selected="onSelectionRowTermini"
-              >
-                <template v-slot:top>
-                  <q-btn color="primary" label="Pregled svih termina" @click="onReadTermini" />
-                  <q-space />
-                  <q-btn color="primary" label="Novi termin" @click="onAddRowTermini" />
-                  <q-btn
-                    v-if="RIWA_Termin.length !== 0"
-                    class="q-ml-sm"
-                    color="primary"
-                    label="Izmijeni termin"
-                    @click="onEditRowTermini"
-                  />
-                  <q-btn
-                    v-if="RIWA_Termin.length !== 0"
-                    class="q-ml-sm"
-                    color="red"
-                    label="Obriši termin"
-                    @click="onDeleteRowTermini"
-                  />
-                </template>
-              </q-table>
-            </q-card-section>
+              />
+            </q-card-actions>
           </q-card>
         </div>
         <!--<div class="q-pa-md">{{ RIWA_Termin }}</div>-->
@@ -179,9 +189,35 @@
         </div>
 
         <!-- ovdje će se raditi s nastavnicima na svim edukacijama-->
-        <div>
+        <div class="q-pa-md">
           <q-card flat bordered class="q-pa-sm">
-            <q-card-section>
+            <q-card-section class="row justify-between">
+              <div>
+                <q-btn
+                  color="primary"
+                  label="Pregled svih nastavnika"
+                  @click="promijeniPrikazNastavnika"
+                />
+              </div>
+              <div>
+                <q-btn color="primary" label="Novi nastavnik" @click="onAddRowNastavnici" />
+                <q-btn
+                  v-if="RIWA_Nastavnik.length !== 0"
+                  class="q-ml-sm"
+                  color="primary"
+                  label="Izmijeni podatke o nastavniku"
+                  @click="onEditRowNastavnici"
+                />
+                <q-btn
+                  v-if="RIWA_Nastavnik.length !== 0"
+                  class="q-ml-sm"
+                  color="red"
+                  label="Obriši nastavnika s popisa"
+                  @click="onDeleteRowNastavnici"
+                />
+              </div>
+            </q-card-section>
+            <q-card-section v-if="showNastavnici">
               <q-table
                 title="Nastavnici"
                 :rows="nastavnici"
@@ -191,31 +227,7 @@
                 selection="single"
                 v-model:selected="RIWA_Nastavnik"
                 @update:selected="onSelectionRowNastavnici"
-              >
-                <template v-slot:top>
-                  <q-btn
-                    color="primary"
-                    label="Pregled svih nastavnika"
-                    @click="onReadNastavnici"
-                  />
-                  <q-space />
-                  <q-btn color="primary" label="Novi nastavnik" @click="onAddRowNastavnici" />
-                  <q-btn
-                    v-if="RIWA_Nastavnik.length !== 0"
-                    class="q-ml-sm"
-                    color="primary"
-                    label="Izmijeni podatke o nastavniku"
-                    @click="onEditRowNastavnici"
-                  />
-                  <q-btn
-                    v-if="RIWA_Nastavnik.length !== 0"
-                    class="q-ml-sm"
-                    color="red"
-                    label="Obriši nastavnika s popisa"
-                    @click="onDeleteRowNastavnici"
-                  />
-                </template>
-              </q-table>
+              />
             </q-card-section>
           </q-card>
         </div>
@@ -254,10 +266,36 @@
           </q-card>
         </div>
 
-        <!-- ovdje će se raditi s polaznicima na svim edukacijama-->
-        <div>
+        <!-- ovdje će Administrator raditi s polaznicima na svim edukacijama-->
+        <div class="q-pa-md">
           <q-card flat bordered class="q-pa-sm">
-            <q-card-section>
+            <q-card-section class="row justify-between">
+              <div>
+                <q-btn
+                  color="primary"
+                  label="Pregled polaznika"
+                  @click="promijeniPrikazPolaznika"
+                />
+              </div>
+              <div>
+                <q-btn color="primary" label="Novi polaznik" @click="onAddRowPolaznici" />
+                <q-btn
+                  v-if="RIWA_Polaznik.length !== 0"
+                  class="q-ml-sm"
+                  color="primary"
+                  label="Izmijeni polaznika"
+                  @click="onEditRowPolaznici"
+                />
+                <q-btn
+                  v-if="RIWA_Polaznik.length !== 0"
+                  class="q-ml-sm"
+                  color="red"
+                  label="Obriši polaznika"
+                  @click="onDeleteRowPolaznici"
+                />
+              </div>
+            </q-card-section>
+            <q-card-section v-if="showPolaznici">
               <q-table
                 title="Polaznici"
                 :rows="polaznici"
@@ -267,27 +305,7 @@
                 selection="single"
                 v-model:selected="RIWA_Polaznik"
                 @update:selected="onSelectionRowPolaznici"
-              >
-                <template v-slot:top>
-                  <q-btn color="primary" label="Pregled polaznika" @click="onReadPolaznici" />
-                  <q-space />
-                  <q-btn color="primary" label="Novi polaznik" @click="onAddRowPolaznici" />
-                  <q-btn
-                    v-if="RIWA_Polaznik.length !== 0"
-                    class="q-ml-sm"
-                    color="primary"
-                    label="Izmijeni polaznika"
-                    @click="onEditRowPolaznici"
-                  />
-                  <q-btn
-                    v-if="RIWA_Polaznik.length !== 0"
-                    class="q-ml-sm"
-                    color="red"
-                    label="Obriši polaznika"
-                    @click="onDeleteRowPolaznici"
-                  />
-                </template>
-              </q-table>
+              />
             </q-card-section>
           </q-card>
         </div>
@@ -385,21 +403,25 @@ const edukacije = ref([])
 const RIWA_Edukacija = ref([])
 const urediEdukaciju = ref({})
 const showFormEdukacije = ref(false)
+const showEdukacije = ref(false)
 
 const termini = ref([])
 const RIWA_Termin = ref([])
 const urediTermin = ref({})
 const showFormTermini = ref(false)
+const showTermini = ref(false)
 
 const nastavnici = ref([])
 const RIWA_Nastavnik = ref([])
 const urediNastavnika = ref({})
 const showFormNastavnici = ref(false)
+const showNastavnici = ref(false)
 
 const polaznici = ref([])
 const RIWA_Polaznik = ref([])
 const urediPolaznika = ref({})
 const showFormPolaznici = ref(false)
+const showPolaznici = ref(false)
 
 const showEvidencije = ref(false)
 const odabranaEdukacija = ref(null)
@@ -409,6 +431,22 @@ const evidencija = ref([])
 
 const promijeniPrikazEvidencija = () => {
   showEvidencije.value = !showEvidencije.value
+}
+
+const promijeniPrikazEdukacija = () => {
+  showEdukacije.value = !showEdukacije.value
+}
+
+const promijeniPrikazTermina = () => {
+  showTermini.value = !showTermini.value
+}
+
+const promijeniPrikazNastavnika = () => {
+  showNastavnici.value = !showNastavnici.value
+}
+
+const promijeniPrikazPolaznika = () => {
+  showPolaznici.value = !showPolaznici.value
 }
 
 const dohvatiTermineEdukacije = async () => {
