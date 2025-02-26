@@ -117,7 +117,7 @@
                 <div>
                   <q-btn label="Spremi Edukaciju" type="submit" color="primary" />
                   <q-btn
-                    label="Zatvori popis edukacija"
+                    label="Zatvori prozor za uređenje edukacija"
                     color="primary"
                     @click="onCloseEdukacije"
                     class="q-ml-sm"
@@ -187,7 +187,7 @@
                 <div>
                   <q-btn label="Spremi termin" type="submit" color="primary" />
                   <q-btn
-                    label="Zatvori unos termina"
+                    label="Zatvori prozor za unos i izmjenu termina"
                     color="primary"
                     @click="onCloseTermin"
                     class="q-ml-sm"
@@ -265,7 +265,7 @@
                 <div>
                   <q-btn label="Spremi podatke o nastavniku" type="submit" color="primary" />
                   <q-btn
-                    label="Zatvori unos podataka o nastavniku"
+                    label="Zatvori mogućnost unosa i izmjene podataka o nastavniku"
                     color="primary"
                     @click="onCloseNastavnici"
                     class="q-ml-sm"
@@ -335,7 +335,7 @@
                 <div>
                   <q-btn label="Spremi polaznika" type="submit" color="primary" />
                   <q-btn
-                    label="Zatvori unos podataka o polazniku"
+                    label="Zatvori unos i izmjenu podataka o polazniku"
                     color="primary"
                     @click="onClosePolaznici"
                     class="q-ml-sm"
