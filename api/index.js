@@ -190,10 +190,6 @@ app.delete('/api/RIWA_Evidencija', async (req, res, next) => {
   }
 })
 
-app.get('/api/evidencija', (req, res) => {
-  res.sendFile(__dirname + '/Prikazevidencije.html')
-})
-
 app.get('/api/evidencija', async function (req, res, next) {
   try {
     const result = await query(`
@@ -319,6 +315,34 @@ app.delete('/api/Administrator_Termin', async function (req, res, next) {
     res.json(sveIzTermina)
   } catch (err) {
     console.error('Greška u brisanju termina održavanja edukacije ', err.message)
+    next(err)
+  }
+})
+
+// GET ruta za dohvaćanje svih termina
+app.get('/api/termini', async (req, res, next) => {
+  try {
+    const result = await query('SELECT * FROM RIWA_Termin')
+    res.json(result)
+  } catch (err) {
+    console.error('Greška pri dohvaćanju termina: ', err.message)
+    next(err)
+  }
+})
+
+// GET ruta za provjeru postoji li zapis u evidenciji s odabranom edukacijom i terminom
+app.get('/api/evidencija/:idEdukacije/:idTermina', async (req, res, next) => {
+  try {
+    const { idEdukacije, idTermina } = req.params
+    console.log('Dohvaćanje evidencije za edukaciju:', idEdukacije, 'i termin:', idTermina)
+    const result = await query(
+      'SELECT e.idZapisa, p.imeIPrezimePolaznika, n.imeIPrezimeNastavnika FROM RIWA_Evidencija e LEFT JOIN RIWA_Polaznik p ON e.idPolaznika = p.idPolaznika LEFT JOIN RIWA_Nastavnik n ON e.idNastavnika = n.idNastavnika WHERE e.idEdukacije = ? AND e.idTermina = ?',
+      [idEdukacije, idTermina],
+    )
+    console.log('Rezultat dohvaćanja evidencije:', result)
+    res.json(result)
+  } catch (err) {
+    console.error('Greška pri dohvaćanju evidencije: ', err.message)
     next(err)
   }
 })

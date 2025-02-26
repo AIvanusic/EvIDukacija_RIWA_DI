@@ -12,31 +12,41 @@
                 @click="promijeniPrikazEvidencija"
               />
               <div v-if="showEvidencije">
-                <q-select
-                  v-model="odabranaEdukacija"
-                  :options="edukacije"
-                  label="Odaberite edukaciju"
-                  option-value="idEdukacije"
-                  option-label="nazivEdukacije"
-                  @change="dohvatiTermineEdukacije"
-                />
-                <q-select
-                  v-if="terminiEdukacije.length > 0"
-                  v-model="odabraniTerminEdukacije"
-                  :options="terminiEdukacije"
-                  label="Odaberite termin"
-                  option-value="idTermina"
-                  option-label="termin"
-                  @change="dohvatiEvidenciju"
-                />
-                <div v-if="evidencija.length > 0">
+                <div v-if="!evidencijaPrikazana">
+                  <q-select
+                    v-model="odabranaEdukacija"
+                    :options="edukacije"
+                    label="Odaberite edukaciju"
+                    option-value="idEdukacije"
+                    option-label="nazivEdukacije"
+                    @change="dohvatiTermine"
+                  />
+                  <q-select
+                    v-if="termini.length > 0"
+                    v-model="odabraniTermin"
+                    :options="termini"
+                    label="Odaberite termin"
+                    option-value="idTermina"
+                    option-label="termin"
+                  />
+                  <q-btn
+                    v-if="odabraniTermin"
+                    color="primary"
+                    label="PRIKAŽI EVIDENCIJU"
+                    @click="provjeriEvidenciju"
+                    class="q-mt-md"
+                  />
+                </div>
+                <div v-if="evidencijaPrikazana">
+                  <p><strong>Edukacija:</strong> {{ odabranaEdukacija.nazivEdukacije }}</p>
+                  <p><strong>Termin održavanja:</strong> {{ odabraniTermin.termin }}</p>
                   <p>
-                    <strong>Nastavnik:</strong> {{ evidencija[0].titulaNastavnika }}
-                    {{ evidencija[0].imeIPrezimeNastavnika }}
+                    <strong>Nastavnik izvođač edukacije:</strong>
+                    {{ evidencija[0].titulaNastavnika }} {{ evidencija[0].imeIPrezimeNastavnika }}
                   </p>
                   <p><strong>Polaznici:</strong></p>
                   <ul>
-                    <li v-for="polaznik in evidencija" :key="polaznik.idPolaznika">
+                    <li v-for="polaznik in filtriraniPolaznici" :key="polaznik.idZapisa">
                       {{ polaznik.imeIPrezimePolaznika }}
                     </li>
                   </ul>
@@ -341,7 +351,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { api } from 'boot/axios'
 
 defineOptions({
@@ -424,9 +434,9 @@ const showFormPolaznici = ref(false)
 const showPolaznici = ref(false)
 
 const showEvidencije = ref(false)
+const evidencijaPrikazana = ref(false) // Dodano
 const odabranaEdukacija = ref(null)
-const terminiEdukacije = ref([])
-const odabraniTerminEdukacije = ref(null)
+const odabraniTermin = ref(null) // Dodano
 const evidencija = ref([])
 
 const promijeniPrikazEvidencija = () => {
@@ -449,23 +459,44 @@ const promijeniPrikazPolaznika = () => {
   showPolaznici.value = !showPolaznici.value
 }
 
-const dohvatiTermineEdukacije = async () => {
+const dohvatiTermine = async () => {
   try {
-    const response = await api.get(`/Administrator_Termin/${odabranaEdukacija.value}`)
-    terminiEdukacije.value = response.data
+    const response = await api.get('/termini') // Ispravljen URL
+    termini.value = response.data
   } catch (error) {
-    console.error('Pogreška dohvaćanja termina za edukaciju:', error)
+    console.error('Pogreška dohvaćanja termina:', error)
   }
 }
 
-const dohvatiEvidenciju = async () => {
+const provjeriEvidenciju = async () => {
   try {
-    const response = await api.get(`/Administrator_Evidencija/${odabraniTerminEdukacije.value}`)
+    if (!odabranaEdukacija.value || !odabraniTermin.value) {
+      alert('Molimo odaberite edukaciju i termin.')
+      return
+    }
+    // Provjerite jesu li odabranaEdukacija i odabraniTermin objekti i pristupite njihovim ID-ovima
+    const edukacijaId = odabranaEdukacija.value.idEdukacije || odabranaEdukacija.value
+    const terminId = odabraniTermin.value.idTermina || odabraniTermin.value
+
+    console.log('Provjera evidencije za edukaciju:', edukacijaId, 'i termin:', terminId)
+    const response = await api.get(`/evidencija/${edukacijaId}/${terminId}`)
     evidencija.value = response.data
+    console.log('Dohvaćena evidencija:', evidencija.value)
+    if (evidencija.value.length === 0) {
+      alert('Odabrana edukacija nije održana u odabranom terminu.')
+    } else {
+      evidencijaPrikazana.value = true
+    }
   } catch (error) {
-    console.error('Pogreška dohvaćanja evidencije:', error)
+    console.error('Pogreška provjere evidencije:', error)
+    alert('Došlo je do pogreške pri dohvaćanju evidencije.')
   }
 }
+
+// Filtrirajte polaznike koji nisu null
+const filtriraniPolaznici = computed(() => {
+  return evidencija.value.filter((polaznik) => polaznik.imeIPrezimePolaznika)
+})
 
 // ovo je za rad administratora s edukacijama
 const onReadEdukacije = async () => {
@@ -737,5 +768,6 @@ onMounted(() => {
   onReadTermini()
   onReadNastavnici()
   onReadPolaznici()
+  dohvatiTermine()
 })
 </script>
