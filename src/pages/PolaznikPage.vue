@@ -52,9 +52,7 @@
           />
           <p v-if="odabranaEdukacija">
             Zahvaljujemo, {{ odabraniPolaznik.imeIPrezimePolaznika }}. Dalje, molim Vas, odaberite u
-            kojem ste terminu ili terminima prisustvovali edukaciji "{{
-              odabranaEdukacija.nazivEdukacije
-            }}".
+            kojem ste terminu prisustvovali edukaciji "{{ odabranaEdukacija.nazivEdukacije }}".
           </p>
           <q-btn
             v-if="odabranaEdukacija"
