@@ -40,14 +40,12 @@ const linksList = [
     caption: 'Kvalificirani i stručni, spremni dijeliti svoje znanje',
     icon: 'work',
     route: '/nastavnik',
-    //link: 'https://github.com/quasarframework',
   },
   {
     title: 'Polaznica/Polaznik edukacije',
     caption: 'Dođoh, vidjeh, naučih!',
     icon: 'person',
     route: '/polaznik',
-    //link: 'https://chat.quasar.dev',
   },
 ]
 

@@ -161,9 +161,9 @@ const dohvatiEvidenciju = async () => {
 const onSave = async () => {
   try {
     await axios.post('http://localhost:3000/api/RIWA_Evidencija', {
-      idEdukacija: odabraneEdukacije.value,
-      idNastavnika: odabraniNastavnik.value,
-      idTermina: odabraniTermin.value,
+      NedukacijaID: odabraneEdukacije.value?.idEdukacije,
+      NnastavnikID: odabraniNastavnik.value?.idNastavnika,
+      NterminID: odabraniTermin.value?.idTermina,
     })
     alert('Evidencija uspješno spremljena!')
 

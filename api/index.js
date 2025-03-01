@@ -14,7 +14,7 @@ app.use(
 )
 app.use(cors({ origin: '*' }))
 app.use(bodyParser.json())
-// Stvaranje veze na bazu - zašto ovo uz datoteku config.js?
+
 app.use(express.static(__dirname))
 const pool = mysql.createPool(config.db)
 
@@ -106,6 +106,7 @@ app.get('/api/RIWA_Termin', async (req, res, next) => {
 // POST ruta za spremanje evidencije
 app.post('/api/evidencija', async (req, res, next) => {
   try {
+    console.log(req.body)
     const { polaznikId, edukacijaId, terminId } = req.body
 
     if (!polaznikId || !edukacijaId || !terminId) {
@@ -127,16 +128,17 @@ app.post('/api/evidencija', async (req, res, next) => {
 
 app.post('/api/RIWA_Evidencija', async (req, res, next) => {
   try {
-    const { idEdukacija, idNastavnika, idTermina } = req.body
+    console.log(req.body)
+    const { NedukacijaID, NnastavnikID, NterminID } = req.body
 
-    if (!idEdukacija || !idNastavnika || !idTermina) {
+    if (!NedukacijaID || !NnastavnikID || !NterminID) {
       return res.status(400).json({ error: 'Nedostaju podaci za spremanje evidencije!' })
     }
 
     // Upit za unos u tablicu RIWA_Evidencija
     const [result] = await pool.query(
       'INSERT INTO RIWA_Evidencija (idEdukacije, idNastavnika, idTermina) VALUES (?, ?, ?)',
-      [idEdukacija, idNastavnika, idTermina],
+      [NedukacijaID, NnastavnikID, NterminID],
     )
 
     res.json({ message: 'Evidencija uspješno spremljena!', idEvidencija: result.insertId })
@@ -149,6 +151,7 @@ app.post('/api/RIWA_Evidencija', async (req, res, next) => {
 // PUT ruta za uređivanje evidencije
 app.put('/api/RIWA_Evidencija', async (req, res, next) => {
   try {
+    console.log(req.body)
     const { idEdukacija, idNastavnika, idTermina } = req.body
 
     if (!idEdukacija || !idNastavnika || !idTermina) {
