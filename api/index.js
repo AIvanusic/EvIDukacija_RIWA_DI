@@ -152,16 +152,16 @@ app.post('/api/RIWA_Evidencija', async (req, res, next) => {
 app.put('/api/RIWA_Evidencija', async (req, res, next) => {
   try {
     console.log(req.body)
-    const { idEdukacija, idNastavnika, idTermina } = req.body
+    const { NedukacijaID, NnastavnikID, NterminID } = req.body
 
-    if (!idEdukacija || !idNastavnika || !idTermina) {
+    if (!NedukacijaID || !NnastavnikID || !NterminID) {
       return res.status(400).json({ error: 'Nedostaju podaci za uređivanje evidencije!' })
     }
 
     // Upit za uređivanje u tablici RIWA_Evidencija
     await pool.query(
       'UPDATE RIWA_Evidencija SET idEdukacije = ? WHERE idNastavnika = ? AND idTermina = ?',
-      [idEdukacija, idNastavnika, idTermina],
+      [NedukacijaID, NnastavnikID, NterminID],
     )
 
     res.json({ message: 'Evidencija uspješno uređena!' })
@@ -174,16 +174,16 @@ app.put('/api/RIWA_Evidencija', async (req, res, next) => {
 // DELETE ruta za brisanje evidencije
 app.delete('/api/RIWA_Evidencija', async (req, res, next) => {
   try {
-    const { idEdukacija, idNastavnika, idTermina } = req.body
+    const { NedukacijaID, NnastavnikID, NterminID } = req.body
 
-    if (!idEdukacija || !idNastavnika || !idTermina) {
+    if (!NedukacijaID || !NnastavnikID || !NterminID) {
       return res.status(400).json({ error: 'Nedostaju podaci za brisanje evidencije!' })
     }
 
     // Upit za brisanje iz tablice RIWA_Evidencija
     await pool.query(
       'DELETE FROM RIWA_Evidencija WHERE idEdukacije = ? AND idNastavnika = ? AND idTermina = ?',
-      [idEdukacija, idNastavnika, idTermina],
+      [NedukacijaID, NnastavnikID, NterminID],
     )
 
     res.json({ message: 'Evidencija uspješno obrisana!' })

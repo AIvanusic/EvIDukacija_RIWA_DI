@@ -184,10 +184,9 @@ const onEdit = async () => {
 
   try {
     await axios.put('http://localhost:3000/api/RIWA_Evidencija', {
-      idEdukacija: odabranaEvidencija.value.idEdukacije,
-      idNastavnika: odabraniNastavnik.value,
-      idTermina: odabraniTermin.value,
-      noviIdEdukacija: odabraneEdukacije.value,
+      NedukacijaID: odabraneEdukacije.value?.idEdukacije,
+      NnastavnikID: odabraniNastavnik.value?.idNastavnika,
+      NterminID: odabraniTermin.value?.idTermina,
     })
     alert('Evidencija uspješno uređena!')
 
@@ -209,9 +208,9 @@ const onDelete = async () => {
   try {
     await axios.delete('http://localhost:3000/api/RIWA_Evidencija', {
       data: {
-        idEdukacija: odabraneEdukacije.value,
-        idNastavnika: odabraniNastavnik.value,
-        idTermina: odabraniTermin.value,
+        NedukacijaID: odabraneEdukacije.value?.idEdukacije,
+        NnastavnikID: odabraniNastavnik.value?.idNastavnika,
+        NterminID: odabraniTermin.value?.idTermina,
       },
     })
     alert('Evidencija uspješno obrisana!')
