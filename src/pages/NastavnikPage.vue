@@ -73,7 +73,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+//import axios from 'axios'
+import { api } from 'boot/axios'
 
 defineOptions({
   name: 'NastavnikPage',
@@ -98,7 +99,7 @@ const odabranaEvidencija = ref(null) // Varijabla za pohranu odabrane evidencije
 
 const dohvatiSveuciliste = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/RIWA_Sveuciliste')
+    const response = await api.get('/RIWA_Sveuciliste')
     nazivSveucilista.value = response.data.nazivSveucilista
     nazivSastavnice.value = response.data.nazivSastavnice
     adresaSastavnice.value = response.data.adresaSastavnice
@@ -111,7 +112,7 @@ const dohvatiSveuciliste = async () => {
 
 const dohvatiEdukacije = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/RIWA_Edukacija')
+    const response = await api.get('/RIWA_Edukacija')
     edukacije.value = response.data
   } catch (error) {
     console.error('Pogreška dohvaćanja podataka o edukacijama:', error)
@@ -120,7 +121,7 @@ const dohvatiEdukacije = async () => {
 
 const dohvatiNastavnike = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/RIWA_Nastavnik')
+    const response = await api.get('/RIWA_Nastavnik')
     nastavnici.value = response.data.map((nastavnik) => ({
       ...nastavnik,
       nastavnikLabel: `${nastavnik.titulaNastavnika || ''} ${nastavnik.imeIPrezimeNastavnika || ''}`,
@@ -132,7 +133,7 @@ const dohvatiNastavnike = async () => {
 
 const dohvatiTermine = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/RIWA_Termin')
+    const response = await api.get('/RIWA_Termin')
     termini.value = response.data
   } catch (error) {
     console.error('Pogreška dohvaćanja podataka o terminima:', error)
@@ -142,9 +143,7 @@ const dohvatiTermine = async () => {
 const dohvatiEvidenciju = async () => {
   try {
     if (odabraniNastavnik.value) {
-      const response = await axios.get(
-        `http://localhost:3000/api/RIWA_Evidencija?nastavnikId=${odabraniNastavnik.value}`,
-      )
+      const response = await api.get(`/RIWA_Evidencija?nastavnikId=${odabraniNastavnik.value}`)
       if (response.data.length > 0) {
         odabranaEvidencija.value = response.data[0]
         odabraneEdukacije.value = odabranaEvidencija.value.idEdukacije
@@ -160,7 +159,7 @@ const dohvatiEvidenciju = async () => {
 
 const onSave = async () => {
   try {
-    await axios.post('http://localhost:3000/api/RIWA_Evidencija', {
+    await api.post('/RIWA_Evidencija', {
       NedukacijaID: odabraneEdukacije.value?.idEdukacije,
       NnastavnikID: odabraniNastavnik.value?.idNastavnika,
       NterminID: odabraniTermin.value?.idTermina,
@@ -183,7 +182,7 @@ const onEdit = async () => {
   }
 
   try {
-    await axios.put('http://localhost:3000/api/RIWA_Evidencija', {
+    await api.put('/RIWA_Evidencija', {
       NedukacijaID: odabraneEdukacije.value?.idEdukacije,
       NnastavnikID: odabraniNastavnik.value?.idNastavnika,
       NterminID: odabraniTermin.value?.idTermina,
@@ -206,7 +205,7 @@ const onDelete = async () => {
   }
 
   try {
-    await axios.delete('http://localhost:3000/api/RIWA_Evidencija', {
+    await api.delete('/RIWA_Evidencija', {
       data: {
         NedukacijaID: odabraneEdukacije.value?.idEdukacije,
         NnastavnikID: odabraniNastavnik.value?.idNastavnika,

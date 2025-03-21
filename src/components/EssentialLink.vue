@@ -1,5 +1,5 @@
 <template>
-  <q-item clickable :to="props.route" tag="router-link">
+  <q-item clickable @click="handleClick" :to="props.route" tag="router-link">
     <q-item-section v-if="props.icon" avatar>
       <q-icon :name="props.icon" />
     </q-item-section>
@@ -41,5 +41,18 @@ const props = defineProps({
     type: String,
     default: '',
   },
+
+  action: {
+    type: Function, // Ovdje dodajemo podršku za funkciju
+    default: null,
+  },
+
+  onClick: { type: Function, default: null },
 })
+
+const handleClick = () => {
+  if (props.onClick) {
+    props.onClick() // Ako postoji `onClick`, pokreni ga
+  }
+}
 </script>

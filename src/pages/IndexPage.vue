@@ -1,9 +1,9 @@
 <template>
   <q-page class="flex flex-center">
     <img
-      alt="EvIDukacija logo"
-      src="src\assets\EvIDukacija_logotip.png"
-      style="width: 600px; height: 400px"
+      alt="mEvIDukacija_logo"
+      src="src\assets\mEvIDukacija_logo.jpg"
+      style="width: 300px; height: 200px"
     />
   </q-page>
 </template>

@@ -96,7 +96,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+
+import { api } from 'boot/axios'
 
 const korak = ref(1)
 
@@ -115,7 +116,7 @@ const odabraniTermin = ref(null) // odabrani termin
 // Funkcija za dohvaćanje podataka iz baze putem API-ja
 const dohvatiPolaznike = async () => {
   try {
-    const response_polaznici = await axios.get('http://localhost:3000/api/polaznici_polaznici')
+    const response_polaznici = await api.get('/polaznici_polaznici')
     polaznici.value = response_polaznici.data
   } catch (error) {
     console.error('Greška pri dohvaćanju polaznika:', error)
@@ -123,7 +124,7 @@ const dohvatiPolaznike = async () => {
 }
 const dohvatiEdukacije = async () => {
   try {
-    const response_edukacije = await axios.get('http://localhost:3000/api/polaznici_edukacije')
+    const response_edukacije = await api.get('/polaznici_edukacije')
     edukacija.value = response_edukacije.data
   } catch (error) {
     console.error('Greška pri dohvaćanju popisa održanih edukacija:', error)
@@ -131,7 +132,7 @@ const dohvatiEdukacije = async () => {
 }
 const dohvatiTermine = async () => {
   try {
-    const response_termini = await axios.get('http://localhost:3000/api/polaznici_termini')
+    const response_termini = await api.get('/polaznici_termini')
     termin.value = response_termini.data
   } catch (error) {
     console.error('Greška pri dohvaćanju popisa održanih edukacija:', error)
@@ -152,7 +153,7 @@ const sljedeciKorak = () => {
 // Kada korisnik potvrdi odabir, sprema se evidencija
 const spremiEvidenciju = async () => {
   try {
-    await axios.post('http://localhost:3000/api/evidencija', {
+    await api.post('/evidencija', {
       polaznikId: odabraniPolaznik.value.idPolaznika,
       edukacijaId: odabranaEdukacija.value.idEdukacije,
       terminId: odabraniTermin.value.idTermina,
